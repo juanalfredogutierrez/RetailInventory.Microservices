@@ -1,0 +1,56 @@
+
+services:
+
+  # =========================
+  # AUTH SERVICE
+  # =========================
+  authservice:
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+    container_name: authservice
+    ports:
+      - "5001:80"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AuthDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - retail-network
+
+  # =========================
+  # PRODUCTO SERVICE
+  # =========================
+  productoservice:
+    build:
+      context: .
+      dockerfile: ProductoService/Dockerfile
+    container_name: productoservice
+    ports:
+      - "5002:80"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ProductoDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+    depends_on:
+      - sqlserver
+    networks:
+      - retail-network
+
+  # =========================
+  # GATEWAY (OCELOT)
+  # =========================
+  gateway:
+    build:
+      context: .
+      dockerfile: Gateway/Dockerfile
+    container_name: gateway
+    ports:
+      - "5000:80"
+    depends_on:
+      - authservice
+      - productoservice
+    networks:
+      - retail-network
+
+networks:
+  retail-network:
+    external: true
