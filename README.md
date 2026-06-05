@@ -1,0 +1,1 @@
+# JMCloudLab.RetailInventoryPlatform
