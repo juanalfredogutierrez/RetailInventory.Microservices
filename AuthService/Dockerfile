@@ -1,23 +1,18 @@
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY AuthService/AuthService.csproj AuthService/
-COPY BuildingBlocks/BuildingBlocks.csproj BuildingBlocks/
-
-RUN dotnet restore AuthService/AuthService.csproj
-
 COPY . .
 
-WORKDIR /src/AuthService
+RUN dotnet restore ./AuthService/AuthService.csproj
 
-RUN dotnet publish -c Release -o /app/publish --no-restore
+RUN dotnet publish ./AuthService/AuthService.csproj -c Release -o /app/publish \
+    /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-EXPOSE 80
-
 COPY --from=build /app/publish .
+
+EXPOSE 80
 
 ENTRYPOINT ["dotnet", "AuthService.dll"]

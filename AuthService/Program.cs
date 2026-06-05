@@ -31,7 +31,7 @@ app.UseSwaggerUI();
 
 
 app.UseMiddleware<CorrelationMiddleware>();
-app.UseMiddleware<ExceptionMiddleware>();
+//app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

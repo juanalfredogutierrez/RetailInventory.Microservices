@@ -21,8 +21,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, string>
         var user = await _context.Usuarios
             .Include(x => x.Rol)
             .FirstOrDefaultAsync(x =>
-                x.NombreUsuario == request.Username &&
-                x.ClaveHash == request.Password,
+                x.NombreUsuario == request.Username,
                 cancellationToken);
 
         if (user == null)
