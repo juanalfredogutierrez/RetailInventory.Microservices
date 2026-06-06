@@ -39,13 +39,21 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Guid>
 
         _context.Compras.Add(compra);
         await _context.SaveChangesAsync(cancellationToken);
-
-        await _publisher.PublishAsync("compra.registrada", new CompraRegistradaEvent
+        try
         {
-            EventId = Guid.NewGuid(),
-            NumeroCompra = compra.NumeroCompra,
-            Total = compra.TotalCompra
-        });
+            await _publisher.PublishAsync("compra.registrada", new CompraRegistradaEvent
+            {
+                EventId = Guid.NewGuid(),
+                NumeroCompra = compra.NumeroCompra,
+                Total = compra.TotalCompra
+            });
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception(ex.Message);
+        }
+  
         return compra.Uid;
     }
 }

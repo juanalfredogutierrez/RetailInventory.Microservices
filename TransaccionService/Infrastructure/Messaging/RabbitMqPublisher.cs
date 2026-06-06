@@ -13,9 +13,15 @@ public class RabbitMqPublisher
     {
         _channel = channel;
     }
-
     public async Task PublishAsync<T>(string queue, T message)
     {
+        await _channel.QueueDeclareAsync(
+            queue: queue,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+
         var traceId = CorrelationContext.TraceId;
 
         var properties = new BasicProperties

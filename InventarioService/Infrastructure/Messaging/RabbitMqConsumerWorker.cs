@@ -11,98 +11,197 @@ using System.Text.Json;
 
 namespace InventarioService.Infrastructure.Messaging;
 
-public class RabbitMqConsumerWorker : BackgroundService
+public sealed class RabbitMqConsumerWorker : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
+
     private IConnection _connection;
-    private IModel _channel;
+    private IChannel _channel;
 
     public RabbitMqConsumerWorker(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
+    }
 
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
         var factory = new ConnectionFactory
         {
             HostName = "rabbitmq"
         };
 
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
+        _connection = await factory.CreateConnectionAsync(cancellationToken);
+        _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
-        _channel.QueueDeclare("compra.registrada", true, false);
-        _channel.QueueDeclare("venta.registrada", true, false);
+        await _channel.QueueDeclareAsync(
+            queue: "compra.registrada",
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            cancellationToken: cancellationToken);
+
+        await _channel.QueueDeclareAsync(
+            queue: "venta.registrada",
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            cancellationToken: cancellationToken);
+
+        await _channel.BasicQosAsync(
+            prefetchSize: 0,
+            prefetchCount: 10,
+            global: false,
+            cancellationToken: cancellationToken);
+
+        await base.StartAsync(cancellationToken);
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var consumer = new EventingBasicConsumer(_channel);
+        if (_channel is null)
+            throw new InvalidOperationException("RabbitMQ channel no inicializado.");
 
-        consumer.Received += async (_, eventArgs) =>
+        var consumer = new AsyncEventingBasicConsumer(_channel);
+
+        consumer.ReceivedAsync += async (_, ea) =>
         {
-            var message = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
-
-            using var scope = _scopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<InventarioDbContext>();
-            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
-            if (eventArgs.RoutingKey == "compra.registrada")
+            try
             {
-                var evt = JsonSerializer.Deserialize<CompraRegistradaEvent>(message);
+                await ProcesarMensaje(ea);
 
-                if (await ExisteEvento(db, evt.EventId)) return;
-
-                await GuardarEvento(db, evt.EventId, "CompraRegistradaEvent");
-
- 
-                foreach (var item in evt.Items)
-                {
-                    await mediator.Send(new RegistrarEntradaCommand(
-                        item.ProductoId,
-                        item.Cantidad,
-                        evt.NumeroCompra
-                    ));
-                }
+                await _channel.BasicAckAsync(
+                    deliveryTag: ea.DeliveryTag,
+                    multiple: false,
+                    cancellationToken: stoppingToken);
             }
-
-            if (eventArgs.RoutingKey == "venta.registrada")
+            catch (Exception ex)
             {
-                var evt = JsonSerializer.Deserialize<VentaRegistradaEvent>(message);
+                Console.WriteLine(
+                    $"Error procesando mensaje: {ex.Message}");
 
-                if (await ExisteEvento(db, evt.EventId)) return;
-
-                await GuardarEvento(db, evt.EventId, "VentaRegistradaEvent");
-
-                foreach (var item in evt.Items)
-                {
-                    await mediator.Send(new RegistrarSalidaCommand(
-                        item.ProductoId,
-                        item.Cantidad
-                    ));
-                }
+                await _channel.BasicNackAsync(
+                    deliveryTag: ea.DeliveryTag,
+                    multiple: false,
+                    requeue: true,
+                    cancellationToken: stoppingToken);
             }
         };
 
-        _channel.BasicConsume("compra.registrada", true, consumer);
-        _channel.BasicConsume("venta.registrada", true, consumer);
+        await _channel.BasicConsumeAsync(
+            queue: "compra.registrada",
+            autoAck: false,
+            consumer: consumer,
+            cancellationToken: stoppingToken);
 
-        return Task.CompletedTask;
+        await _channel.BasicConsumeAsync(
+            queue: "venta.registrada",
+            autoAck: false,
+            consumer: consumer,
+            cancellationToken: stoppingToken);
+
+        await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 
-    private static async Task<bool> ExisteEvento(InventarioDbContext db, Guid eventId)
+    private async Task ProcesarMensaje(BasicDeliverEventArgs ea)
     {
-        return await db.EventosProcesados.AnyAsync(x => x.EventoId == eventId);
+        var message = Encoding.UTF8.GetString(ea.Body.ToArray());
+
+        using var scope = _scopeFactory.CreateScope();
+
+        var db = scope.ServiceProvider.GetRequiredService<InventarioDbContext>();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+        switch (ea.RoutingKey)
+        {
+            case "compra.registrada":
+                await ProcesarCompra(message, db, mediator);
+                break;
+
+            case "venta.registrada":
+                await ProcesarVenta(message, db, mediator);
+                break;
+        }
     }
 
-    private static async Task GuardarEvento(InventarioDbContext db, Guid eventId, string name)
+    private static async Task ProcesarCompra(
+        string message,
+        InventarioDbContext db,
+        IMediator mediator)
+    {
+        var evt = JsonSerializer.Deserialize<CompraRegistradaEvent>(message);
+
+        if (evt is null)
+            return;
+
+        if (await ExisteEvento(db, evt.EventId))
+            return;
+
+        await GuardarEvento(db, evt.EventId, nameof(CompraRegistradaEvent));
+
+        foreach (var item in evt.Items)
+        {
+            await mediator.Send(new RegistrarEntradaCommand(
+                item.ProductoId,
+                item.Cantidad,
+                evt.NumeroCompra));
+        }
+    }
+
+    private static async Task ProcesarVenta(
+        string message,
+        InventarioDbContext db,
+        IMediator mediator)
+    {
+        var evt = JsonSerializer.Deserialize<VentaRegistradaEvent>(message);
+
+        if (evt is null)
+            return;
+
+        if (await ExisteEvento(db, evt.EventId))
+            return;
+
+        await GuardarEvento(db, evt.EventId, nameof(VentaRegistradaEvent));
+
+        foreach (var item in evt.Items)
+        {
+            await mediator.Send(new RegistrarSalidaCommand(
+                item.ProductoId,
+                item.Cantidad));
+        }
+    }
+
+    private static Task<bool> ExisteEvento(
+        InventarioDbContext db,
+        Guid eventId)
+    {
+        return db.EventosProcesados
+            .AnyAsync(x => x.EventoId == eventId);
+    }
+
+    private static async Task GuardarEvento(
+        InventarioDbContext db,
+        Guid eventId,
+        string nombreEvento)
     {
         db.EventosProcesados.Add(new Domain.Entities.EventoProcesado
         {
             Id = Guid.NewGuid(),
             EventoId = eventId,
-            NombreEvento = name,
+            NombreEvento = nombreEvento,
             FechaProcesamiento = DateTime.UtcNow
         });
 
         await db.SaveChangesAsync();
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (_channel is not null)
+            await _channel.DisposeAsync();
+
+        if (_connection is not null)
+            await _connection.DisposeAsync();
+
+        await base.StopAsync(cancellationToken);
     }
 }
