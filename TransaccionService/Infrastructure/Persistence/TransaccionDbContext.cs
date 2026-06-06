@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BuildingBlocks.Domain;
+using Microsoft.EntityFrameworkCore;
 using TransaccionService.Domain.Entities;
 
 namespace TransaccionService.Infrastructure.Persistence;
@@ -10,18 +11,14 @@ public class TransaccionDbContext : DbContext
     {
     }
 
-    // =========================
-    // DBSets
-    // =========================
+ 
     public DbSet<Compra> Compras => Set<Compra>();
     public DbSet<DetalleCompra> DetalleCompras => Set<DetalleCompra>();
 
     public DbSet<Venta> Ventas => Set<Venta>();
     public DbSet<DetalleVenta> DetalleVentas => Set<DetalleVenta>();
 
-    // =========================
-    // CONFIGURACIÓN MODELOS
-    // =========================
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -91,5 +88,26 @@ public class TransaccionDbContext : DbContext
             entity.Property(x => x.Subtotal)
                   .HasColumnType("decimal(18,2)");
         });
+    }
+
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker
+            .Entries<AuditableEntity>();
+
+        foreach (var entry in entries)
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+
+            if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }

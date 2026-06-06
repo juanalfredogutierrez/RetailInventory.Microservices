@@ -1,4 +1,5 @@
-﻿using InventarioService.Domain.Entities;
+﻿using BuildingBlocks.Domain;
+using InventarioService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -21,5 +22,24 @@ public class InventarioDbContext : DbContext
         modelBuilder.Entity<DetalleMovimientoInventario>().ToTable("DetalleMovimientoInventario");
         modelBuilder.Entity<ExistenciaProducto>().ToTable("ExistenciaProducto");
         modelBuilder.Entity<EventoProcesado>().ToTable("EventoProcesado");
+    }
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker
+            .Entries<AuditableEntity>();
+
+        foreach (var entry in entries)
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+
+            if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }

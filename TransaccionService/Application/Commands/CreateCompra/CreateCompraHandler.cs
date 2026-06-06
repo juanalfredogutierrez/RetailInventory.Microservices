@@ -40,7 +40,7 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Guid>
         _context.Compras.Add(compra);
         await _context.SaveChangesAsync(cancellationToken);
 
-        _publisher.Publish("compra.registrada", new CompraRegistradaEvent
+        await _publisher.PublishAsync("compra.registrada", new CompraRegistradaEvent
         {
             EventId = Guid.NewGuid(),
             NumeroCompra = compra.NumeroCompra,

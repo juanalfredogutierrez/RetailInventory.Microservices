@@ -1,5 +1,4 @@
-﻿
-using BuildingBlocks.Correlation;
+﻿using BuildingBlocks.Correlation;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
@@ -8,31 +7,33 @@ namespace TransaccionService.Infrastructure.Messaging;
 
 public class RabbitMqPublisher
 {
-    private readonly IModel _channel;
+    private readonly IChannel _channel;
 
-    public RabbitMqPublisher(IModel channel)
+    public RabbitMqPublisher(IChannel channel)
     {
         _channel = channel;
     }
 
-    public void Publish<T>(string queue, T message)
+    public async Task PublishAsync<T>(string queue, T message)
     {
         var traceId = CorrelationContext.TraceId;
 
-        var props = _channel.CreateBasicProperties();
-        props.Headers = new Dictionary<string, object>
+        var properties = new BasicProperties
         {
-            { "X-Trace-Id", traceId }
+            Headers = new Dictionary<string, object?>
+            {
+                ["X-Trace-Id"] = traceId
+            }
         };
 
         var json = JsonSerializer.Serialize(message);
         var body = Encoding.UTF8.GetBytes(json);
 
-        _channel.BasicPublish(
-            exchange: "",
+        await _channel.BasicPublishAsync(
+            exchange: string.Empty,
             routingKey: queue,
-            basicProperties: props,
-            body: body
-        );
+            mandatory: false,
+            basicProperties: properties,
+            body: body);
     }
 }

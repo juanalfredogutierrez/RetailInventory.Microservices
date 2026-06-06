@@ -29,7 +29,6 @@ public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Guid
             Descripcion = request.Descripcion,
             Precio = request.Precio,
             Activo = true,
-            CreatedAt = DateTime.UtcNow,
             CreatedBy = "system"
         };
 

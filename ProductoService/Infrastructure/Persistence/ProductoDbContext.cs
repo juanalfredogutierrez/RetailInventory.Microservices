@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BuildingBlocks.Domain;
+using Microsoft.EntityFrameworkCore;
 using ProductoService.Domain.Entities;
 
 namespace ProductoService.Infrastructure.Persistence;
@@ -24,5 +25,24 @@ public class ProductoDbContext : DbContext
             entity.Property(x => x.Nombre).IsRequired().HasMaxLength(150);
             entity.Property(x => x.Precio).HasColumnType("decimal(18,2)");
         });
+    }
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker
+            .Entries<AuditableEntity>();
+
+        foreach (var entry in entries)
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = DateTime.UtcNow;
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+            }
+
+            if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }
