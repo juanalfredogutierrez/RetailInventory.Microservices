@@ -25,7 +25,7 @@ public class RegistrarEntradaHandler : IRequestHandler<RegistrarEntradaCommand, 
             {
                 ProductoId = request.ProductoId,
                 CantidadDisponible = request.Cantidad,
-                FechaActualizacion = DateTime.UtcNow
+                FechaActualizacion = DateTime.Now
             };
 
             _context.Existencias.Add(stock);
@@ -33,7 +33,7 @@ public class RegistrarEntradaHandler : IRequestHandler<RegistrarEntradaCommand, 
         else
         {
             stock.CantidadDisponible += request.Cantidad;
-            stock.FechaActualizacion = DateTime.UtcNow;
+            stock.FechaActualizacion = DateTime.Now;
         }
 
         await _context.SaveChangesAsync(cancellationToken);

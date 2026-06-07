@@ -43,9 +43,15 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Guid>
         {
             await _publisher.PublishAsync("compra.registrada", new CompraRegistradaEvent
             {
-                EventId = Guid.NewGuid(),
+
                 NumeroCompra = compra.NumeroCompra,
-                Total = compra.TotalCompra
+                Items = compra.Detalles.Select(x =>
+                    new CompraRegistradaItemEvent
+                    {
+                        ProductoId = x.ProductoId,
+                        Cantidad = x.Cantidad
+                    })
+            .ToList()
             });
         }
         catch (Exception ex)
@@ -53,7 +59,7 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Guid>
 
             throw new Exception(ex.Message);
         }
-  
+
         return compra.Uid;
     }
 }
