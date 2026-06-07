@@ -1,5 +1,7 @@
-﻿using AuthService.Infrastructure.Persistence;
+﻿using AuthService.Application;
+using AuthService.Infrastructure.Persistence;
 using AuthService.Infrastructure.Security;
+using BuildingBlocks;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using BuildingBlocks.Security;
@@ -11,7 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddApplication();
+builder.Services.AddBuildingBlocks();
 builder.Services.AddDbContext<AuthDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -27,8 +30,6 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-
 
 app.UseMiddleware<CorrelationMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();

@@ -1,12 +1,19 @@
+using BuildingBlocks;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
+using TransaccionService.Application;
 using TransaccionService.Infrastructure.Messaging;
 using TransaccionService.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient("InventarioApi", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5002/");
+});
 
 builder.Services.AddSingleton<IConnection>(sp =>
 {
@@ -33,12 +40,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddApplication();
+builder.Services.AddBuildingBlocks();
+
 builder.Services.AddDbContext<TransaccionDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
 builder.Services.AddSingleton<RabbitMqPublisher>();
 
 var app = builder.Build();

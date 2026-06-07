@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TransaccionService.Application.Commands.CreateCompra;
+using TransaccionService.Application.Commands.CreateVenta;
 
 namespace TransaccionService.Controllers;
 
@@ -17,6 +18,13 @@ public class TransaccionController : ControllerBase
 
     [HttpPost("compra")]
     public async Task<IActionResult> CreateCompra(CreateCompraCommand command)
+    {
+        var id = await _mediator.Send(command);
+        return Ok(new { id });
+    }
+
+    [HttpPost("venta")]
+    public async Task<IActionResult> CreateVenta(CreateVentaCommand command)
     {
         var id = await _mediator.Send(command);
         return Ok(new { id });

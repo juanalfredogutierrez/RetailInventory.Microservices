@@ -1,18 +1,24 @@
-﻿
-using BuildingBlocks.Correlation;
+﻿using BuildingBlocks.Correlation;
 using Microsoft.Extensions.Logging;
-
-namespace BuildingBlocks.Application.Logging;
 
 public static class LoggerExtensions
 {
-    public static void LogWithTrace(
+    public static void LogBusiness(
         this ILogger logger,
-        LogLevel level,
         string message)
     {
-        logger.Log(level,
-            "[TraceId:{TraceId}] {Message}",
+        logger.LogInformation(
+            "[BUSINESS] [TraceId:{TraceId}] {Message}",
+            CorrelationContext.TraceId,
+            message);
+    }
+
+    public static void LogIntegration(
+        this ILogger logger,
+        string message)
+    {
+        logger.LogInformation(
+            "[INTEGRATION] [TraceId:{TraceId}] {Message}",
             CorrelationContext.TraceId,
             message);
     }

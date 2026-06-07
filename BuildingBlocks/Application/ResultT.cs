@@ -1,12 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace BuildingBlocks.Application;
 
-namespace BuildingBlocks.Application
+public class Result<T> : Result
 {
-    internal class ResultT
+    public T? Value { get; }
+
+    private Result(T value)
+        : base(true)
+    {
+        Value = value;
+    }
+
+    private Result(IEnumerable<Error> errors)
+        : base(false, errors)
     {
     }
+
+    public static Result<T> Success(T value)
+        => new(value);
+
+    public static new Result<T> Failure(params Error[] errors)
+        => new(errors);
+
+    public static implicit operator Result<T>(T value)
+        => Success(value);
 }

@@ -1,7 +1,9 @@
+using BuildingBlocks;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using ProductoService.Application;
 using ProductoService.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,8 @@ builder.Services.AddMediatR(cfg =>
 
 var app = builder.Build();
 
+builder.Services.AddApplication();
+builder.Services.AddBuildingBlocks();
 app.UseSwagger();
 app.UseSwaggerUI();
 

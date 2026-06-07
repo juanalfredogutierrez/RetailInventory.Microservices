@@ -2,6 +2,7 @@
 using BuildingBlocks.Correlation;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace BuildingBlocks.Behaviors;
 
@@ -15,11 +16,13 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     }
 
     public async Task<TResponse> Handle(
-        TRequest request,
-        RequestHandlerDelegate<TResponse> next,
-        CancellationToken cancellationToken)
+       TRequest request,
+       RequestHandlerDelegate<TResponse> next,
+       CancellationToken cancellationToken)
     {
         var traceId = CorrelationContext.TraceId;
+
+        var stopwatch = Stopwatch.StartNew();
 
         _logger.LogInformation(
             "[START] {Request} | TraceId: {TraceId}",
@@ -28,11 +31,14 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
         var response = await next();
 
+        stopwatch.Stop();
+
         _logger.LogInformation(
-            "[END] {Request} | TraceId: {TraceId}",
+            "[END] {Request} | TraceId: {TraceId} | {Elapsed}ms",
             typeof(TRequest).Name,
-            traceId);
+            traceId,
+            stopwatch.ElapsedMilliseconds);
 
         return response;
     }
-}
+}   
