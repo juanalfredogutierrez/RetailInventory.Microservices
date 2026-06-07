@@ -27,7 +27,7 @@ public sealed class RabbitMqConsumerWorker : BackgroundService
     {
         var factory = new ConnectionFactory
         {
-            HostName = "rabbitmq"
+            HostName = "localhost"
         };
 
         _connection = await factory.CreateConnectionAsync(cancellationToken);
@@ -76,8 +76,7 @@ public sealed class RabbitMqConsumerWorker : BackgroundService
             }
             catch (Exception ex)
             {
-                Console.WriteLine(
-                    $"Error procesando mensaje: {ex.Message}");
+                Console.WriteLine( $"Error procesando mensaje: {ex.Message}");
 
                 await _channel.BasicNackAsync(
                     deliveryTag: ea.DeliveryTag,
@@ -123,10 +122,7 @@ public sealed class RabbitMqConsumerWorker : BackgroundService
         }
     }
 
-    private static async Task ProcesarCompra(
-        string message,
-        InventarioDbContext db,
-        IMediator mediator)
+    private static async Task ProcesarCompra(string message,InventarioDbContext db,IMediator mediator)
     {
         var evt = JsonSerializer.Deserialize<CompraRegistradaEvent>(message);
 
@@ -147,10 +143,7 @@ public sealed class RabbitMqConsumerWorker : BackgroundService
         }
     }
 
-    private static async Task ProcesarVenta(
-        string message,
-        InventarioDbContext db,
-        IMediator mediator)
+    private static async Task ProcesarVenta(string message,InventarioDbContext db,IMediator mediator)
     {
         var evt = JsonSerializer.Deserialize<VentaRegistradaEvent>(message);
 
@@ -164,24 +157,17 @@ public sealed class RabbitMqConsumerWorker : BackgroundService
 
         foreach (var item in evt.Items)
         {
-            await mediator.Send(new RegistrarSalidaCommand(
-                item.ProductoId,
-                item.Cantidad));
+            await mediator.Send(new RegistrarSalidaCommand(item.ProductoId,item.Cantidad));
         }
     }
 
-    private static Task<bool> ExisteEvento(
-        InventarioDbContext db,
-        Guid eventId)
+    private static Task<bool> ExisteEvento(InventarioDbContext db,Guid eventId)
     {
         return db.EventosProcesados
             .AnyAsync(x => x.EventoId == eventId);
     }
 
-    private static async Task GuardarEvento(
-        InventarioDbContext db,
-        Guid eventId,
-        string nombreEvento)
+    private static async Task GuardarEvento(InventarioDbContext db,Guid eventId, string nombreEvento)
     {
         db.EventosProcesados.Add(new Domain.Entities.EventoProcesado
         {

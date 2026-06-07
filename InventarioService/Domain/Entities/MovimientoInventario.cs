@@ -1,5 +1,4 @@
 ﻿using BuildingBlocks.Domain;
-using System;
 
 namespace InventarioService.Domain.Entities;
 
