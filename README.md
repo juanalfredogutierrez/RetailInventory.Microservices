@@ -1,44 +1,56 @@
 # JMCloudLab.RetailInventoryPlatform
 
-## Descripción General
+## Descripción
 
-JMCloudLab.RetailInventoryPlatform es una plataforma de gestión de inventario desarrollada bajo una arquitectura de microservicios.
+Plataforma de gestión de inventario desarrollada bajo una arquitectura basada en microservicios utilizando .NET 8, RabbitMQ, SQL Server y Ocelot.
 
-La solución permite gestionar productos, compras, ventas e inventario, incorporando autenticación mediante JWT, comunicación asíncrona mediante RabbitMQ y un API Gateway centralizado con Ocelot.
-
-El objetivo principal fue implementar una arquitectura escalable, desacoplada y alineada con buenas prácticas de desarrollo empresarial utilizando .NET y Angular.
+La solución implementa autenticación JWT, gestión de productos, compras, ventas y actualización de inventario mediante comunicación asíncrona basada en eventos.
 
 ---
 
-# Arquitectura de la Solución
-
-La solución está compuesta por los siguientes componentes:
+# Arquitectura General
 
 ```text
-Angular Frontend
-        │
-        ▼
-API Gateway (Ocelot)
-        │
- ┌──────┼─────────────┐
- ▼      ▼             ▼
-Auth   Producto    Compra
-Service Service    Service
-        │
-        ▼
- InventarioService
-        │
-        ▼
-     SQL Server
-```
+┌─────────────────────────────┐
+│      Angular Frontend       │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│    API Gateway (Ocelot)     │
+└──────────────┬──────────────┘
+               │
+     ┌─────────┼─────────┐
+     │         │         │
+     ▼         ▼         ▼
 
-La comunicación entre servicios se realiza mediante APIs REST y eventos publicados a través de RabbitMQ.
+┌─────────┐ ┌─────────┐ ┌─────────┐
+│  Auth   │ │Producto │ │ Compra  │
+│ Service │ │ Service │ │ Service │
+└─────────┘ └─────────┘ └────┬────┘
+                             │
+                             ▼
+
+                    ┌────────────────┐
+                    │ InventarioSvc  │
+                    └───────┬────────┘
+                            │
+                            ▼
+
+                     ┌────────────┐
+                     │ RabbitMQ   │
+                     └─────┬──────┘
+                           │
+                           ▼
+
+                     ┌────────────┐
+                     │ SQL Server │
+                     └────────────┘
+```
 
 ---
 
-# Tecnologías Utilizadas
-
-## Backend
+# Tecnologías
 
 * .NET 8
 * ASP.NET Core Web API
@@ -49,23 +61,14 @@ La comunicación entre servicios se realiza mediante APIs REST y eventos publica
 * RabbitMQ
 * JWT Authentication
 * Ocelot API Gateway
-
-## Frontend
-
-* Angular 21
-* Standalone Components
-* Angular Signals
-* Reactive Forms
-* Route Guards
-* HTTP Interceptors
+* Docker
+* Docker Compose
 
 ---
 
-# Patrones y Principios Aplicados
+# Patrones Implementados
 
 ## Clean Architecture
-
-La solución backend se encuentra organizada en capas:
 
 ```text
 API
@@ -74,323 +77,145 @@ Domain
 Infrastructure
 ```
 
-Beneficios:
-
-* Separación de responsabilidades
-* Mayor mantenibilidad
-* Escalabilidad
-* Facilidad para realizar pruebas
-
----
-
 ## CQRS
 
-Se implementó el patrón CQRS utilizando MediatR.
+Separación de comandos y consultas mediante MediatR.
 
 Ejemplos:
 
-### Commands
-
 ```text
-CreateProductoCommand
-RegistrarCompraCommand
-RegistrarVentaCommand
+Commands
+- CreateProductoCommand
+- RegistrarCompraCommand
+- RegistrarVentaCommand
+
+Queries
+- GetProductosQuery
 ```
 
-### Queries
+## Event Driven Architecture
 
-```text
-GetProductosQuery
-```
+Comunicación desacoplada entre servicios mediante RabbitMQ.
 
 ---
 
-## Comunicación Asíncrona
-
-RabbitMQ es utilizado para desacoplar procesos entre servicios.
-
-Ejemplo:
-
-```text
-Compra Registrada
-       │
-       ▼
-RabbitMQ
-       │
-       ▼
-InventarioService
-       │
-       ▼
-Actualización de Stock
-```
-
----
-
-# Microservicios Implementados
+# Microservicios
 
 ## AuthService
-
-Responsabilidades:
 
 * Autenticación de usuarios
 * Generación de JWT
 * Validación de credenciales
 
-Funcionalidades:
-
-* Login
-* Generación de Token JWT
-* Inclusión de información de usuario y rol dentro del token
-
----
-
 ## ProductoService
-
-Responsabilidades:
-
-* Gestión de productos
-
-Funcionalidades implementadas:
 
 * Registro de productos
 * Consulta de productos
 
----
-
 ## CompraService
 
-Responsabilidades:
-
 * Registro de compras
-
-Funcionalidades implementadas:
-
-* Registro de compras
-* Publicación de eventos hacia RabbitMQ
-
----
+* Publicación de eventos
 
 ## InventarioService
 
-Responsabilidades:
+* Gestión de inventario
+* Actualización de stock
+* Consumo de eventos RabbitMQ
 
-* Gestión de stock
-* Procesamiento de eventos
+## ApiGateway
 
-Funcionalidades implementadas:
-
-* Actualización de stock por compras
-* Actualización de stock por ventas
-
----
-
-# API Gateway
-
-Se implementó Ocelot como punto único de entrada.
-
-Responsabilidades:
-
-* Enrutamiento de solicitudes
+* Enrutamiento centralizado
 * Seguridad
-* Centralización de acceso a microservicios
+* Punto único de acceso
 
 ---
 
-# Seguridad
-
-La autenticación fue implementada mediante JWT.
-
-Características:
-
-* Login protegido
-* Auth Guard
-* HTTP Interceptor
-* Validación de token
-* Redirección automática al Login cuando el token expira
-
----
-
-# Funcionalidades Frontend
-
-## Login
-
-Implementado:
-
-* Inicio de sesión mediante JWT
-* Almacenamiento de token
-* Protección de rutas
-* Manejo de expiración de sesión
-
----
-
-## Dashboard
-
-Implementado:
-
-* Layout principal
-* Sidebar de navegación
-* Topbar
-
----
-
-## Módulo de Productos
-
-Implementado:
-
-* Listado de productos
-* Registro de productos
-
----
-
-## Módulo de Compras
-
-Implementado:
-
-* Registro de compras
-* Selección de productos
-* Integración con inventario
-
----
-
-## Módulo de Ventas
-
-Implementado:
-
-* Registro de ventas
-* Integración con inventario
-
----
-
-# Flujo de Inventario
-
-## Flujo de Compra
+# Flujo de Compra
 
 ```text
-Compra
+Usuario
    │
    ▼
+
+CompraService
+   │
+   ▼
+
 RabbitMQ
    │
    ▼
+
 InventarioService
    │
    ▼
-Stock Actualizado
+
+SQL Server
 ```
 
-## Flujo de Venta
+---
+
+# Flujo de Venta
 
 ```text
-Venta
+Usuario
    │
    ▼
+
+VentaService
+   │
+   ▼
+
 RabbitMQ
    │
    ▼
+
 InventarioService
    │
    ▼
-Stock Actualizado
+
+SQL Server
 ```
 
 ---
 
-# Estructura del Proyecto
+# Docker Compose
 
-## Backend
+La solución puede ejecutarse utilizando Docker Compose.
 
-```text
-src
-│
-├── ApiGateway
-├── AuthService
-├── ProductoService
-├── CompraService
-├── InventarioService
-└── BuildingBlocks
-```
+Servicios incluidos:
 
-## Frontend
-
-```text
-JMCloudLab.RetailInventoryPlatform.Web
-│
-├── core
-├── features
-│   ├── auth
-│   ├── dashboard
-│   ├── productos
-│   ├── compras
-│   └── ventas
-│
-├── layout
-└── shared
-```
-
----
-
-# Ejecución de la Solución
-
-## Requisitos Previos
-
-* .NET 8 SDK
-* Node.js 22+
-* Angular CLI
+* ApiGateway
+* AuthService
+* ProductoService
+* CompraService
+* InventarioService
 * SQL Server
 * RabbitMQ
 
----
-
-## Backend
-
-Restaurar paquetes:
+## Ejecutar
 
 ```bash
-dotnet restore
+docker compose up -d
 ```
 
-Ejecutar los servicios:
+## Detener
 
 ```bash
-dotnet run
-```
-
----
-
-## Frontend
-
-Instalar dependencias:
-
-```bash
-npm install
-```
-
-Ejecutar la aplicación:
-
-```bash
-ng serve
-```
-
-Acceso:
-
-```text
-http://localhost:4200
-```
-
----
-
-# Credenciales de Prueba
-
-```text
-Usuario: admin
-Contraseña: Admin123*
+docker compose down
 ```
 
 ---
 
 # Consideraciones
 
-Debido al tiempo limitado definido para la evaluación técnica, se priorizó la implementación de la arquitectura, la integración entre microservicios, la seguridad mediante JWT y los flujos funcionales de negocio (Productos, Compras y Ventas).
+Debido al tiempo limitado de la evaluación técnica se priorizó:
+
+* Arquitectura de microservicios
+* Seguridad JWT
+* Comunicación asíncrona
+* Integración entre servicios
+* Flujos funcionales de negocio
 
 ---
 
@@ -398,23 +223,14 @@ Debido al tiempo limitado definido para la evaluación técnica, se priorizó la
 
 * Pruebas Unitarias
 * Pruebas de Integración
-* Actualización y eliminación de productos
-* Dashboard con métricas en tiempo real
-* Docker Compose
-* CI/CD
+* Observabilidad
 * Logging centralizado
-* Monitoreo y observabilidad
-
----
-<img width="393" height="291" alt="image" src="https://github.com/user-attachments/assets/ecbe6d79-f748-4ec7-8d25-75704ad82bd4" />
-<img width="508" height="840" alt="image" src="https://github.com/user-attachments/assets/9b7eeade-ac54-4921-b8a9-450fe81768ca" />
-
-<img width="1208" height="999" alt="image" src="https://github.com/user-attachments/assets/4d98626f-0e7e-4016-a8e8-6078bdcf8555" />
-<img width="1252" height="932" alt="image" src="https://github.com/user-attachments/assets/7d0e6a86-7c6d-4fde-a524-48145f9da38c" />
-
+* CI/CD
+* Monitoreo
 
 # Autor
 
-Juan Gutierrez
+**Juan Gutierrez**
 
-Desarrollado como solución para evaluación técnica utilizando .NET, Angular, RabbitMQ y arquitectura basada en microservicios.
+Desarrollador .NET / Angular
+<img width="463" height="294" alt="image" src="https://github.com/user-attachments/assets/fba3f6f0-dba5-4c5d-9e1e-9fe4313d1e9d" />
