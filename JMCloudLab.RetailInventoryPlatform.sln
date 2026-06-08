@@ -19,6 +19,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventarioService", "Invent
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0B9B6195-0638-4390-9053-7C9B55BEEA08}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{C8FE047F-E180-49D5-85A7-51A9CCC1ACCE}"
+	ProjectSection(SolutionItems) = preProject
+		..\Users\Juan Gutierrez\Downloads\exo\AuthDb.sql = ..\Users\Juan Gutierrez\Downloads\exo\AuthDb.sql
+		..\Users\Juan Gutierrez\Downloads\exo\InventarioDb.sql = ..\Users\Juan Gutierrez\Downloads\exo\InventarioDb.sql
+		..\Users\Juan Gutierrez\Downloads\exo\ProductoDb.sql = ..\Users\Juan Gutierrez\Downloads\exo\ProductoDb.sql
+		..\Users\Juan Gutierrez\Downloads\exo\TransaccionDb.sql = ..\Users\Juan Gutierrez\Downloads\exo\TransaccionDb.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
