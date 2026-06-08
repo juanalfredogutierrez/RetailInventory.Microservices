@@ -218,7 +218,18 @@ Debido al tiempo limitado de la evaluación técnica se priorizó:
 * Flujos funcionales de negocio
 
 ---
+## Documentación
 
+La solución incluye documentación interactiva mediante Swagger.
+
+Debido a las restricciones de tiempo de la evaluación técnica, no se incluyó una colección Postman exportada, aunque todos los endpoints pueden ser explorados y ejecutados desde Swagger.
+Acceso:
+
+- AuthService: /swagger
+- ProductoService: /swagger
+- CompraService: /swagger
+- InventarioService: /swagger
+  
 # Mejoras Futuras
 
 * Pruebas Unitarias
