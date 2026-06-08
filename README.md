@@ -406,6 +406,12 @@ Debido al tiempo limitado definido para la evaluación técnica, se priorizó la
 * Monitoreo y observabilidad
 
 ---
+<img width="393" height="291" alt="image" src="https://github.com/user-attachments/assets/ecbe6d79-f748-4ec7-8d25-75704ad82bd4" />
+<img width="508" height="840" alt="image" src="https://github.com/user-attachments/assets/9b7eeade-ac54-4921-b8a9-450fe81768ca" />
+
+<img width="1208" height="999" alt="image" src="https://github.com/user-attachments/assets/4d98626f-0e7e-4016-a8e8-6078bdcf8555" />
+<img width="1252" height="932" alt="image" src="https://github.com/user-attachments/assets/7d0e6a86-7c6d-4fde-a524-48145f9da38c" />
+
 
 # Autor
 
