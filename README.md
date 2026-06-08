@@ -206,7 +206,18 @@ docker compose down
 ```
 
 ---
+# Scripts de Base de Datos
 
+La solución incluye los scripts de creación de base de datos correspondientes a cada microservicio.
+
+database/
+│
+├── AuthDb.sql
+├── ProductoDb.sql
+├── CompraDb.sql
+└── InventarioDb.sql
+
+Cada script contiene la estructura necesaria para la creación de las tablas utilizadas por su respectivo servicio.
 # Consideraciones
 
 Debido al tiempo limitado de la evaluación técnica se priorizó:
