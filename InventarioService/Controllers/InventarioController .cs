@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using InventarioService.Application.Commands.RegistrarEntrada;
 using InventarioService.Application.Commands.RegistrarSalida;
 using InventarioService.Application.Queries.GetStock;
+using InventarioService.Extensions;
 
 namespace InventarioService.Controllers;
 
@@ -35,6 +36,7 @@ public class InventarioController : ControllerBase
     public async Task<IActionResult> Stock(int productoId)
     {
         var result = await _mediator.Send(new GetStockQuery(productoId));
-        return Ok(result);
+        return this.ToActionResult(result);
+
     }
 }

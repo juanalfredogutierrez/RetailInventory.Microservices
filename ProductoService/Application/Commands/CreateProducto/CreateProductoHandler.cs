@@ -1,10 +1,11 @@
-﻿using MediatR;
+﻿using BuildingBlocks.Application;
+using MediatR;
 using ProductoService.Domain.Entities;
 using ProductoService.Infrastructure.Persistence;
 
 namespace ProductoService.Application.Commands.CreateProducto;
 
-public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Guid>
+public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Result<Guid>>
 {
     private readonly ProductoDbContext _context;
     private readonly ILogger<CreateProductoHandler> _logger;
@@ -17,7 +18,7 @@ public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Guid
         _logger = logger;
     }
 
-    public async Task<Guid> Handle(CreateProductoCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateProductoCommand request, CancellationToken cancellationToken)
     {
         _logger.LogBusiness("Creando producto");
 

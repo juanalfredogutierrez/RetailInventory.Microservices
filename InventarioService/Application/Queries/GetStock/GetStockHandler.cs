@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using InventarioService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using BuildingBlocks.Application;
 
 namespace InventarioService.Application.Queries.GetStock;
 
-public class GetStockHandler : IRequestHandler<GetStockQuery, int>
+public class GetStockHandler : IRequestHandler<GetStockQuery, Result<int>>
 {
     private readonly InventarioDbContext _context;
 
@@ -13,11 +14,11 @@ public class GetStockHandler : IRequestHandler<GetStockQuery, int>
         _context = context;
     }
 
-    public async Task<int> Handle(GetStockQuery request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(GetStockQuery request, CancellationToken cancellationToken)
     {
         var stock = await _context.Existencias
             .FirstOrDefaultAsync(x => x.ProductoId == request.ProductoId);
 
-        return stock?.CantidadDisponible ?? 0;
+        return Result<int>.Success(stock?.CantidadDisponible ?? 0);
     }
 }

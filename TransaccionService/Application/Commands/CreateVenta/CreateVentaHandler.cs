@@ -1,13 +1,16 @@
-﻿using MediatR;
+﻿using BuildingBlocks.Application;
+using MediatR;
 using System.Net.Http;
+using TransaccionService.Application.DTOs;
 using TransaccionService.Domain.Entities;
+using TransaccionService.Domain.Errors;
 using TransaccionService.Domain.Events;
 using TransaccionService.Infrastructure.Messaging;
 using TransaccionService.Infrastructure.Persistence;
 
 namespace TransaccionService.Application.Commands.CreateVenta;
 
-public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Guid>
+public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Result<Guid>>
 {
     private readonly TransaccionDbContext _context;
     private readonly RabbitMqPublisher _publisher;
@@ -22,8 +25,17 @@ public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Guid>
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<Guid> Handle(CreateVentaCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(
+      CreateVentaCommand request,
+      CancellationToken cancellationToken)
     {
+        if (!request.Detalles.Any())
+        {
+            return Result<Guid>.Failure(
+                VentaErrors.SinItems);
+        }
+
+        var errors = new List<Error>();
 
         foreach (var detalle in request.Detalles)
         {
@@ -32,10 +44,18 @@ public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Guid>
 
             if (stockDisponible < detalle.Cantidad)
             {
-                throw new Exception(
-                    $"Stock insuficiente para el producto {detalle.ProductoId}. " +
-                    $"Disponible: {stockDisponible}, Solicitado: {detalle.Cantidad}");
+                errors.Add(
+                    VentaErrors.StockInsuficiente(
+                        detalle.ProductoId,
+                        stockDisponible,
+                        detalle.Cantidad));
             }
+        }
+
+        if (errors.Count > 0)
+        {
+            return Result<Guid>.Failure(
+                errors.ToArray());
         }
 
         var venta = new Venta
@@ -45,6 +65,7 @@ public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Guid>
             Estado = "CREADA",
             Observacion = request.Observacion,
             TotalVenta = request.Detalles.Sum(x => x.Cantidad * x.PrecioUnitario),
+
             Detalles = request.Detalles.Select(x => new DetalleVenta
             {
                 ProductoId = x.ProductoId,
@@ -55,38 +76,36 @@ public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Guid>
         };
 
         _context.Ventas.Add(venta);
+
         await _context.SaveChangesAsync(cancellationToken);
 
         await _publisher.PublishAsync(
-        "venta.registrada",
-        new VentaRegistradaEvent
-        {
-            EventId = Guid.NewGuid(),
-            NumeroVenta = venta.NumeroVenta,
+            "venta.registrada",
+            new VentaRegistradaEvent
+            {
+                EventId = Guid.NewGuid(),
+                NumeroVenta = venta.NumeroVenta,
 
-            Items = venta.Detalles.Select(x =>
-                new VentaRegistradaItemEvent
-        {
-            ProductoId = x.ProductoId,
-            Cantidad = x.Cantidad
-        })
-        .ToList()
-        });
+                Items = venta.Detalles.Select(x =>
+                    new VentaRegistradaItemEvent
+                    {
+                        ProductoId = x.ProductoId,
+                        Cantidad = x.Cantidad
+                    })
+                    .ToList()
+            });
 
-        return venta.Uid;
+        return venta.Uid; 
     }
 
     private async Task<int> ObtenerStockAsync(int productoId)
     {
         var client = _httpClientFactory.CreateClient("InventarioApi");
 
-        var response = await client.GetAsync(
-            $"api/inventario/stock/{productoId}");
+        var result =
+            await client.GetFromJsonAsync<ApiResponse<int>>(
+                $"api/inventario/stock/{productoId}");
 
-        response.EnsureSuccessStatusCode();
-
-        var contenido = await response.Content.ReadAsStringAsync();
-
-        return int.Parse(contenido);
+        return result?.Data ?? 0;
     }
 }

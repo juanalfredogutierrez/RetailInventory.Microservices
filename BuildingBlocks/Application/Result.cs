@@ -18,7 +18,7 @@ public class Result
         Errors = errors?.ToList() ?? [];
     }
 
-    public static Result Success()
+    public static Result Success(List<object> productos)
         => new(true);
 
     public static Result Failure(params Error[] errors)

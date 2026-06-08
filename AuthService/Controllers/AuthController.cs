@@ -1,6 +1,5 @@
 using AuthService.Application.Commands.Login;
 using AuthService.Extensions;
-using BuildingBlocks.Correlation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

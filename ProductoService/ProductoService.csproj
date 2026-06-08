@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
 		<PackageReference Include="MediatR" Version="14.1.0" />
 		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.27" />
@@ -25,9 +26,8 @@
     <Folder Include="Application\Behaviors\" />
     <Folder Include="Application\Handlers\" />
     <Folder Include="Application\Validators\" />
-    <Folder Include="Domain\Events\" />
-    <Folder Include="Domain\Enums\" />
     <Folder Include="Domain\Errors\" />
+    <Folder Include="Domain\Enums\" />
     <Folder Include="Infrastructure\Messaging\" />
     <Folder Include="Infrastructure\Security\" />
     <Folder Include="Infrastructure\Repositories\" />

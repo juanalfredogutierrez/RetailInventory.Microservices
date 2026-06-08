@@ -8,9 +8,11 @@ using ProductoService.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddApplication();
 
 builder.Services.AddDbContext<ProductoDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -18,10 +20,10 @@ builder.Services.AddDbContext<ProductoDbContext>(opt =>
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+
+
 var app = builder.Build();
 
-builder.Services.AddApplication();
-builder.Services.AddBuildingBlocks();
 app.UseSwagger();
 app.UseSwaggerUI();
 

@@ -15,6 +15,12 @@ builder.Services.AddHttpClient("InventarioApi", client =>
     client.BaseAddress = new Uri("http://localhost:5002/");
 });
 
+builder.Services.AddHttpClient("ProductoApi",
+    client =>
+    {
+        client.BaseAddress = new Uri("http://localhost:5003/");
+    });
+
 builder.Services.AddSingleton<IConnection>(sp =>
 {
     var factory = new ConnectionFactory

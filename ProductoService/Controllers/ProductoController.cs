@@ -2,7 +2,9 @@ using BuildingBlocks.Correlation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProductoService.Application.Commands.CreateProducto;
+using ProductoService.Application.Commands.UpdateProduct;
 using ProductoService.Application.Queries.GetProductos;
+using ProductoService.Extensions;
 
 
 namespace ProductoService.Controllers;
@@ -21,15 +23,25 @@ public class ProductoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateProductoCommand command)
     {
-        var id = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-        return Ok(new { id, traceId = CorrelationContext.TraceId });
+        return this.ToActionResult(result);
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+     public async Task<IActionResult> GetAll()
     {
         var result = await _mediator.Send(new GetProductosQuery());
-        return Ok(result);
+
+        return this.ToActionResult(result);
+    }
+
+    [HttpPut("actualizar-costo")]
+    public async Task<IActionResult> ActualizarCosto(
+    ActualizarCostoProductoCommand command)
+    {
+        var result = await _mediator.Send(command);
+
+        return this.ToActionResult(result);
     }
 }
