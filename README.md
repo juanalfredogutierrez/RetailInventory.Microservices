@@ -244,7 +244,9 @@ Acceso:
 **Juan Gutierrez**
 
 Desarrollador .NET / Angular
-<img width="463" height="294" alt="image" src="https://github.com/user-attachments/assets/fba3f6f0-dba5-4c5d-9e1e-9fe4313d1e9d" />
+
+<img width="440" height="557" alt="image" src="https://github.com/user-attachments/assets/33037e1c-1355-4157-8b4c-5ad8c93dc236" />
+
 
 <img width="1352" height="829" alt="image" src="https://github.com/user-attachments/assets/b033d50c-fda4-40c5-be8b-825756231a4f" />
 
