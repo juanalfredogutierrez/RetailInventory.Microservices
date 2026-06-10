@@ -1,5 +1,11 @@
-# JMCloudLab.RetailInventoryPlatform
+# RetailInventory.Microservices
 
+![.NET 8]
+![Angular 21]
+![RabbitMQ]
+![Docker]
+![Azure]
+![Clean Architecture]
 ## Descripción
 
 Plataforma de gestión de inventario desarrollada bajo una arquitectura basada en microservicios utilizando .NET 8, RabbitMQ, SQL Server y Ocelot.
