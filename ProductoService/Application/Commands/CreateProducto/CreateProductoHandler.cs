@@ -1,11 +1,11 @@
-﻿using BuildingBlocks.Application.Logging;
+﻿using BuildingBlocks.Application;
 using MediatR;
 using ProductoService.Domain.Entities;
 using ProductoService.Infrastructure.Persistence;
 
 namespace ProductoService.Application.Commands.CreateProducto;
 
-public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Guid>
+public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Result<Guid>>
 {
     private readonly ProductoDbContext _context;
     private readonly ILogger<CreateProductoHandler> _logger;
@@ -18,9 +18,9 @@ public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Guid
         _logger = logger;
     }
 
-    public async Task<Guid> Handle(CreateProductoCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateProductoCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogWithTrace(LogLevel.Information, "Creando producto");
+        _logger.LogBusiness("Creando producto");
 
         var producto = new Producto
         {
@@ -35,7 +35,7 @@ public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Guid
         _context.Productos.Add(producto);
         await _context.SaveChangesAsync(cancellationToken);
 
-        _logger.LogWithTrace(LogLevel.Information, $"Producto creado: {producto.Codigo}");
+        _logger.LogBusiness($"Producto creado: {producto.Codigo}");
 
         return producto.Uid;
     }

@@ -2,7 +2,7 @@
 
 namespace InventarioService.Application.Commands.RegistrarSalida;
 
-public record RegistrarSalidaCommand(
+public record   RegistrarSalidaCommand(
     int ProductoId,
     int Cantidad
 ) : IRequest<bool>;

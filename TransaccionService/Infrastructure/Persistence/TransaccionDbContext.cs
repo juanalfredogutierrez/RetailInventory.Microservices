@@ -14,7 +14,6 @@ public class TransaccionDbContext : DbContext
  
     public DbSet<Compra> Compras => Set<Compra>();
     public DbSet<DetalleCompra> DetalleCompras => Set<DetalleCompra>();
-
     public DbSet<Venta> Ventas => Set<Venta>();
     public DbSet<DetalleVenta> DetalleVentas => Set<DetalleVenta>();
 
@@ -100,12 +99,12 @@ public class TransaccionDbContext : DbContext
         {
             if (entry.State == EntityState.Added)
             {
-                entry.Entity.CreatedAt = DateTime.UtcNow;
-                entry.Entity.UpdatedAt = DateTime.UtcNow;
+                entry.Entity.CreatedAt = DateTime.Now;
+                entry.Entity.UpdatedAt = DateTime.Now;
             }
 
             if (entry.State == EntityState.Modified)
-                entry.Entity.UpdatedAt = DateTime.UtcNow;
+                entry.Entity.UpdatedAt = DateTime.Now;
         }
 
         return base.SaveChangesAsync(cancellationToken);

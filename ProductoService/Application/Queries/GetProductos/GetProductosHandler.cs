@@ -1,10 +1,12 @@
-﻿using MediatR;
+﻿using BuildingBlocks.Application;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using ProductoService.DTO;
 using ProductoService.Infrastructure.Persistence;
 
 namespace ProductoService.Application.Queries.GetProductos;
 
-public class GetProductosHandler : IRequestHandler<GetProductosQuery, List<object>>
+public class GetProductosHandler : IRequestHandler<GetProductosQuery, Result<List<ProductoDto>>>
 {
     private readonly ProductoDbContext _context;
 
@@ -12,19 +14,21 @@ public class GetProductosHandler : IRequestHandler<GetProductosQuery, List<objec
     {
         _context = context;
     }
-
-    public async Task<List<object>> Handle(GetProductosQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<ProductoDto>>> Handle(
+        GetProductosQuery request,
+        CancellationToken cancellationToken)
     {
-        return await _context.Productos
-            .Select(p => new
-            {
+        var productos = await _context.Productos
+            .Select(p => new ProductoDto(
+                p.Id,
                 p.Uid,
                 p.Codigo,
                 p.Nombre,
                 p.Precio,
-                p.Activo
-            })
-            .ToListAsync(cancellationToken)
-            .ContinueWith(t => t.Result.Cast<object>().ToList());
+                p.Activo))
+            .ToListAsync(cancellationToken);
+     
+
+        return Result<List<ProductoDto>>.Success(productos);
     }
 }

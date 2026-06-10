@@ -1,18 +1,26 @@
-﻿namespace BuildingBlocks.Application;
+﻿
+
+namespace BuildingBlocks.Application;
 
 public class Result
 {
     public bool IsSuccess { get; }
-    public List<Error> Errors { get; }
 
-    protected Result(bool isSuccess, List<Error>? errors = null)
+    public bool IsFailure => !IsSuccess;
+
+    public IReadOnlyCollection<Error> Errors { get; }
+
+    protected Result(
+        bool isSuccess,
+        IEnumerable<Error>? errors = null)
     {
         IsSuccess = isSuccess;
-        Errors = errors ?? new();
+        Errors = errors?.ToList() ?? [];
     }
 
-    public static Result Success() => new(true);
+    public static Result Success(List<object> productos)
+        => new(true);
 
     public static Result Failure(params Error[] errors)
-        => new(false, errors.ToList());
+        => new(false, errors);
 }

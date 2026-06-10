@@ -1,4 +1,4 @@
-# RetailInventory.Microservices
+# JMCloudLab.RetailInventoryPlatform
 
 ## Descripción
 
@@ -216,6 +216,17 @@ database/
 ├── ProductoDb.sql
 ├── CompraDb.sql
 └── InventarioDb.sql
+
+Cada script contiene la estructura necesaria para la creación de las tablas utilizadas por su respectivo servicio.
+# Consideraciones
+
+Debido al tiempo limitado de la evaluación técnica se priorizó:
+
+* Arquitectura de microservicios
+* Seguridad JWT
+* Comunicación asíncrona
+* Integración entre servicios
+* Flujos funcionales de negocio
 
 ---
 ## Documentación

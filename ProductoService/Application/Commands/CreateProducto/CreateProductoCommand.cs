@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using BuildingBlocks.Application;
+using MediatR;
 
 namespace ProductoService.Application.Commands.CreateProducto;
 
@@ -7,4 +8,4 @@ public record CreateProductoCommand(
     string Nombre,
     string Descripcion,
     decimal Precio
-) : IRequest<Guid>;
+) : IRequest<Result<Guid>>;

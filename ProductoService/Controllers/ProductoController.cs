@@ -1,9 +1,10 @@
-using BuildingBlocks.Application.Logging;
 using BuildingBlocks.Correlation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProductoService.Application.Commands.CreateProducto;
+using ProductoService.Application.Commands.UpdateProduct;
 using ProductoService.Application.Queries.GetProductos;
+using ProductoService.Extensions;
 
 
 namespace ProductoService.Controllers;
@@ -13,28 +14,34 @@ namespace ProductoService.Controllers;
 public class ProductoController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<ProductoController> _logger;
 
-    public ProductoController(IMediator mediator, ILogger<ProductoController> logger)
+    public ProductoController(IMediator mediator)
     {
         _mediator = mediator;
-        _logger = logger;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateProductoCommand command)
     {
-        _logger.LogWithTrace(LogLevel.Information, "Request CreateProducto");
+        var result = await _mediator.Send(command);
 
-        var id = await _mediator.Send(command);
-
-        return Ok(new { id, traceId = CorrelationContext.TraceId });
+        return this.ToActionResult(result);
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+     public async Task<IActionResult> GetAll()
     {
         var result = await _mediator.Send(new GetProductosQuery());
-        return Ok(result);
+
+        return this.ToActionResult(result);
+    }
+
+    [HttpPut("actualizar-costo")]
+    public async Task<IActionResult> ActualizarCosto(
+    ActualizarCostoProductoCommand command)
+    {
+        var result = await _mediator.Send(command);
+
+        return this.ToActionResult(result);
     }
 }

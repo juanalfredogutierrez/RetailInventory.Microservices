@@ -22,7 +22,7 @@ public class RegistrarSalidaHandler : IRequestHandler<RegistrarSalidaCommand, bo
             throw new Exception("Stock insuficiente");
 
         stock.CantidadDisponible -= request.Cantidad;
-        stock.FechaActualizacion = DateTime.UtcNow;
+        stock.FechaActualizacion = DateTime.Now;
 
         await _context.SaveChangesAsync(cancellationToken);
 
