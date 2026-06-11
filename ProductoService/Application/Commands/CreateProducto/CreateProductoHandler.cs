@@ -1,5 +1,6 @@
 ﻿using BuildingBlocks.Application;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using ProductoService.Domain.Entities;
 using ProductoService.Infrastructure.Persistence;
 
@@ -21,6 +22,14 @@ public class CreateProductoHandler : IRequestHandler<CreateProductoCommand, Resu
     public async Task<Result<Guid>> Handle(CreateProductoCommand request, CancellationToken cancellationToken)
     {
         _logger.LogBusiness("Creando producto");
+
+        var existe = await _context.Productos.AnyAsync(x => x.Codigo == request.Codigo,cancellationToken);
+
+        if (existe)
+        {
+            return Result<Guid>.Failure(
+                Errors.Conflict("Ya existe un producto con ese código."));
+        }
 
         var producto = new Producto
         {
