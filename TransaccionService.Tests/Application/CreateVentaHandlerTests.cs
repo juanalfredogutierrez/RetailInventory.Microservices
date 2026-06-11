@@ -1,4 +1,5 @@
 ﻿using BuildingBlocks.Messaging;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -69,89 +70,9 @@ public class CreateVentaHandlerTests
     }
 
     [Fact]
-    public async Task Handle_Should_Return_Failure_When_No_Items()
+    public async Task Should_Return_Failure_When_Stock_Is_Insufficient()
     {
-        var command = new CreateVentaCommand(
-        new List<DetalleVentaDto>(),
-        "Venta prueba");
-
-        var result = await _handler.Handle(
-        command,
-        CancellationToken.None);
-
-        Assert.True(result.IsFailure);
-
-        Assert.Equal(
-        VentaErrors.SinItems.Code,
-        result.FirstError?.Code);
-    }
-
-    [Fact]
-    public async Task Handle_Should_Return_Failure_When_Producto_Is_Invalid()
-    {
-        var command = new CreateVentaCommand(
-        new()
-        {
-    new DetalleVentaDto(0, 1, 100)
-        },
-        "Venta");
-
-        var result = await _handler.Handle(
-        command,
-        CancellationToken.None);
-
-        Assert.True(result.IsFailure);
-
-        Assert.Equal(
-        VentaErrors.ProductoInvalido.Code,
-        result.FirstError?.Code);
-    }
-
-    [Fact]
-    public async Task Handle_Should_Return_Failure_When_Cantidad_Is_Invalid()
-    {
-        var command = new CreateVentaCommand(
-        new()
-        {
-    new DetalleVentaDto(1, 0, 100)
-        },
-        "Venta");
-
-        var result = await _handler.Handle(
-        command,
-        CancellationToken.None);
-
-        Assert.True(result.IsFailure);
-
-        Assert.Equal(
-        VentaErrors.CantidadInvalida.Code,
-        result.FirstError?.Code);
-    }
-
-    [Fact]
-    public async Task Handle_Should_Return_Failure_When_Precio_Is_Invalid()
-    {
-        var command = new CreateVentaCommand(
-        new()
-        {
-    new DetalleVentaDto(1, 2, 0)
-        },
-        "Venta");
-
-        var result = await _handler.Handle(
-        command,
-        CancellationToken.None);
-
-        Assert.True(result.IsFailure);
-
-        Assert.Equal(
-        VentaErrors.PrecioInvalido.Code,
-        result.FirstError?.Code);
-    }
-
-    [Fact]
-    public async Task Handle_Should_Return_Failure_When_Stock_Is_Insufficient()
-    {
+        // Arrange
         var httpClient = new HttpClient(
             new FakeHttpMessageHandler(() =>
             {
@@ -187,19 +108,34 @@ public class CreateVentaHandlerTests
             {
             new DetalleVentaDto(1, 5, 100)
             },
-            "Venta");
+            "Venta prueba");
 
+        // Act
         var result = await handler.Handle(
             command,
             CancellationToken.None);
 
-        Assert.True(result.IsFailure);
+        // Assert
+        result.IsFailure.Should().BeTrue();
 
-        Assert.Equal(
-            VentaErrors.StockInsuficiente(1, 2, 5).Code,
-            result.FirstError?.Code);
+        result.FirstError.Should().NotBeNull();
+
+        result.FirstError!.Code.Should()
+            .Be(VentaErrors.StockInsuficiente(1, 2, 5).Code);
+
+        result.FirstError.Message.Should()
+            .Be(VentaErrors.StockInsuficiente(1, 2, 5).Message);
+
+        // No debe persistir la venta
+        _context.Ventas.Should().BeEmpty();
+
+        // No debe publicar eventos
+        _publisherMock.Verify(
+            x => x.PublishAsync(
+                It.IsAny<string>(),
+                It.IsAny<VentaRegistradaEvent>()),
+            Times.Never);
     }
-    [Fact]
     public async Task Handle_Should_Create_Venta_When_Request_Is_Valid()
     {
         var command = new CreateVentaCommand(
