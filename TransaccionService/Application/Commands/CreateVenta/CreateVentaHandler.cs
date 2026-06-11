@@ -1,11 +1,10 @@
 ﻿using BuildingBlocks.Application;
+using BuildingBlocks.Messaging;
 using MediatR;
-using System.Net.Http;
 using TransaccionService.Application.DTOs;
 using TransaccionService.Domain.Entities;
 using TransaccionService.Domain.Errors;
 using TransaccionService.Domain.Events;
-using TransaccionService.Infrastructure.Messaging;
 using TransaccionService.Infrastructure.Persistence;
 
 namespace TransaccionService.Application.Commands.CreateVenta;
@@ -13,11 +12,11 @@ namespace TransaccionService.Application.Commands.CreateVenta;
 public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Result<Guid>>
 {
     private readonly TransaccionDbContext _context;
-    private readonly RabbitMqPublisher _publisher;
+    private readonly IMessagePublisher _publisher;
     private readonly IHttpClientFactory _httpClientFactory;
     public CreateVentaHandler(
         TransaccionDbContext context,
-        RabbitMqPublisher publisher,
+        IMessagePublisher publisher,
         IHttpClientFactory httpClientFactory    )
     {
         _context = context;

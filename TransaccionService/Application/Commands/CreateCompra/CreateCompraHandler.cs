@@ -1,9 +1,9 @@
 ﻿using BuildingBlocks.Application;
+using BuildingBlocks.Messaging;
 using MediatR;
 using TransaccionService.Domain.Entities;
 using TransaccionService.Domain.Errors;
 using TransaccionService.Domain.Events;
-using TransaccionService.Infrastructure.Messaging;
 using TransaccionService.Infrastructure.Persistence;
 
 namespace TransaccionService.Application.Commands.CreateCompra;
@@ -11,13 +11,13 @@ namespace TransaccionService.Application.Commands.CreateCompra;
 public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Result<Guid>>
 {
     private readonly TransaccionDbContext _context;
-    private readonly RabbitMqPublisher _publisher;
+    private readonly IMessagePublisher _publisher;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<CreateCompraHandler> _logger;
 
     public CreateCompraHandler(
         TransaccionDbContext context,
-        RabbitMqPublisher publisher,
+        IMessagePublisher publisher,
         ILogger<CreateCompraHandler> logger,
         IHttpClientFactory httpClientFactory        )
     {
@@ -37,14 +37,32 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Result<G
                 CompraErrors.SinItems);
         }
 
+        if (request.Detalles.Any(x => x.Cantidad <= 0))
+        {
+            return Result<Guid>.Failure(
+                CompraErrors.CantidadInvalida);
+        }
+
+        if (request.Detalles.Any(x => x.PrecioUnitario <= 0))
+        {
+            return Result<Guid>.Failure(
+                CompraErrors.PrecioInvalido);
+        }
+
+        if (request.Detalles.Any(x => x.ProductoId <= 0))
+        {
+            return Result<Guid>.Failure(
+                CompraErrors.ProductoInvalido);
+        }
+        _logger.LogBusiness($"Registrando compra con {request.Detalles.Count} productos");
+
         var compra = new Compra
         {
             NumeroCompra =$"COM-{Guid.NewGuid().ToString()[..6]}",
             FechaCompra = DateTime.UtcNow,
             Estado = "CREADA",
             Observacion = request.Observacion,
-            TotalCompra = request.Detalles.Sum(x =>
-                x.Cantidad * x.PrecioUnitario),
+            TotalCompra = request.Detalles.Sum(x => x.Cantidad * x.PrecioUnitario),
 
             Detalles = request.Detalles
                 .Select(x => new DetalleCompra
@@ -78,31 +96,24 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Result<G
 
             response.EnsureSuccessStatusCode();
         }
+        _logger.LogInformation("Compra {NumeroCompra} registrada",compra.NumeroCompra);
 
-        _logger.LogInformation(
-            "Compra {NumeroCompra} registrada",
-            compra.NumeroCompra);
+        await _publisher.PublishAsync( "compra.registrada",
+                                    new CompraRegistradaEvent
+                                    {
+                                        NumeroCompra = compra.NumeroCompra,
+                                        Total = compra.TotalCompra,
 
-        await _publisher.PublishAsync(
-            "compra.registrada",
-            new CompraRegistradaEvent
-            {
-                NumeroCompra = compra.NumeroCompra,
-
-                Items = compra.Detalles
-                    .Select(x =>
-                        new CompraRegistradaItemEvent
-                        {
-                            ProductoId = x.ProductoId,
-                            Cantidad = x.Cantidad,
-                            PrecioUnitario =
-                                x.PrecioUnitario
-                        })
-                    .ToList()
-            });
-
-        _logger.LogInformation(
-            "Evento compra.registrada enviado");
+                                        Items = compra.Detalles
+                                            .Select(x => new CompraRegistradaItemEvent
+                                            {
+                                                ProductoId = x.ProductoId,
+                                                Cantidad = x.Cantidad,
+                                                PrecioUnitario = x.PrecioUnitario
+                                            })
+                                            .ToList()
+                                    });
+        _logger.LogInformation("Evento compra.registrada enviado");
 
 
         return Result<Guid>.Success(compra.Uid);

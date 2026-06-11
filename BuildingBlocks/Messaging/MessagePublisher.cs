@@ -3,9 +3,9 @@ using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
-namespace TransaccionService.Infrastructure.Messaging;
+namespace BuildingBlocks.Messaging;
 
-public class RabbitMqPublisher
+public class RabbitMqPublisher : IMessagePublisher
 {
     private readonly IChannel _channel;
 
@@ -13,7 +13,10 @@ public class RabbitMqPublisher
     {
         _channel = channel;
     }
-    public async Task PublishAsync<T>(string queue, T message)
+
+    public async Task PublishAsync<T>(
+        string queue,
+        T message)
     {
         await _channel.QueueDeclareAsync(
             queue: queue,
@@ -33,6 +36,7 @@ public class RabbitMqPublisher
         };
 
         var json = JsonSerializer.Serialize(message);
+
         var body = Encoding.UTF8.GetBytes(json);
 
         await _channel.BasicPublishAsync(

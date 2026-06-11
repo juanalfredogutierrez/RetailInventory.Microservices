@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+	  <PackageReference Include="FluentValidation" Version="12.1.1" />
+	  <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	  <PackageReference Include="MediatR" Version="14.1.0" />
@@ -26,6 +28,7 @@
     <Folder Include="Application\Queries\" />
     <Folder Include="Application\Validators\" />
     <Folder Include="Domain\Enums\" />
+    <Folder Include="Infrastructure\Messaging\" />
     <Folder Include="Infrastructure\Repositories\" />
     <Folder Include="Infrastructure\Security\" />
   </ItemGroup>
