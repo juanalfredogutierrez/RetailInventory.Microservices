@@ -1,10 +1,12 @@
 ﻿using FluentAssertions;
 using InventarioService.Application.Commands.RegistrarSalida;
 using InventarioService.Domain.Entities;
+using InventarioService.Domain.Errors;
 using InventarioService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Reflection.Metadata;
 using Xunit;
 
 namespace InventarioService.Tests.Application.Inventario;
@@ -50,7 +52,7 @@ public class RegistrarSalidaHandlerTests
 
         // Assert
 
-        result.Should().BeTrue();
+        Assert.True(result.IsSuccess);
 
         var stock = await context.Existencias.FirstAsync();
 
@@ -59,10 +61,9 @@ public class RegistrarSalidaHandlerTests
 
 
     [Fact]
-    public async Task Handle_Should_Throw_When_Stock_Does_Not_Exist()
+    public async Task Handle_Should_Return_Failure_When_Stock_Does_Not_Exist()
     {
         // Arrange
-
         var options = new DbContextOptionsBuilder<InventarioDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
@@ -80,22 +81,24 @@ public class RegistrarSalidaHandlerTests
             Cantidad: 5);
 
         // Act
-
-        Func<Task> act = async () =>
-            await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(
+            command,
+            CancellationToken.None);
 
         // Assert
+        result.IsFailure.Should().BeTrue();
 
-        await act.Should()
-            .ThrowAsync<Exception>()
-            .WithMessage("Stock insuficiente");
+        result.FirstError.Should().NotBeNull();
+
+        result.FirstError!.Code.Should()
+            .Be(InventarioErrors.ProductoNoEncontrado.Code);
     }
 
+
     [Fact]
-    public async Task Handle_Should_Throw_When_Stock_Is_Insufficient()
+    public async Task Handle_Should_Return_Failure_When_Stock_Is_Insufficient()
     {
         // Arrange
-
         var options = new DbContextOptionsBuilder<InventarioDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
@@ -123,14 +126,16 @@ public class RegistrarSalidaHandlerTests
             Cantidad: 10);
 
         // Act
-
-        Func<Task> act = async () =>
-            await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(
+            command,
+            CancellationToken.None);
 
         // Assert
+        result.IsFailure.Should().BeTrue();
 
-        await act.Should()
-            .ThrowAsync<Exception>()
-            .WithMessage("Stock insuficiente");
+        result.FirstError.Should().NotBeNull();
+
+        result.FirstError!.Code.Should()
+            .Be(InventarioErrors.StockInsuficiente.Code);
     }
 }

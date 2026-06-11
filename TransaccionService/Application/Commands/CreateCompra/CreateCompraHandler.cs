@@ -27,33 +27,8 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Result<G
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<Result<Guid>> Handle(
-        CreateCompraCommand request,
-        CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle( CreateCompraCommand request,CancellationToken cancellationToken)
     {
-        if (!request.Detalles.Any())
-        {
-            return Result<Guid>.Failure(
-                CompraErrors.SinItems);
-        }
-
-        if (request.Detalles.Any(x => x.Cantidad <= 0))
-        {
-            return Result<Guid>.Failure(
-                CompraErrors.CantidadInvalida);
-        }
-
-        if (request.Detalles.Any(x => x.PrecioUnitario <= 0))
-        {
-            return Result<Guid>.Failure(
-                CompraErrors.PrecioInvalido);
-        }
-
-        if (request.Detalles.Any(x => x.ProductoId <= 0))
-        {
-            return Result<Guid>.Failure(
-                CompraErrors.ProductoInvalido);
-        }
         _logger.LogBusiness($"Registrando compra con {request.Detalles.Count} productos");
 
         var compra = new Compra

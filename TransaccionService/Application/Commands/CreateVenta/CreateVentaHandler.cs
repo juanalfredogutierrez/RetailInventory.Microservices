@@ -32,30 +32,6 @@ public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Result<Gui
         CreateVentaCommand request,
         CancellationToken cancellationToken)
     {
-        if (!request.Detalles.Any())
-        {
-            return Result<Guid>.Failure(
-                VentaErrors.SinItems);
-        }
-
-        if (request.Detalles.Any(x => x.ProductoId <= 0))
-        {
-            return Result<Guid>.Failure(
-                VentaErrors.ProductoInvalido);
-        }
-
-        if (request.Detalles.Any(x => x.Cantidad <= 0))
-        {
-            return Result<Guid>.Failure(
-                VentaErrors.CantidadInvalida);
-        }
-
-        if (request.Detalles.Any(x => x.PrecioUnitario <= 0))
-        {
-            return Result<Guid>.Failure(
-                VentaErrors.PrecioInvalido);
-        }
-
         _logger.LogBusiness($"Registrando venta con {request.Detalles.Count} productos");
 
         var validacionesStock = request.Detalles.Select(async detalle =>

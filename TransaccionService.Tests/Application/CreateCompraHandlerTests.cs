@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
 using TransaccionService.Application.Commands.CreateCompra;
-using TransaccionService.Domain.Errors;
 using TransaccionService.Domain.Events;
 using TransaccionService.Infrastructure.Persistence;
 using TransaccionService.Tests.Helpers;
@@ -53,74 +52,7 @@ public class CreateCompraHandlerTests
         _httpClientFactoryMock.Object);
     }
 
-    [Fact]
-    public async Task Handle_Should_Return_Failure_When_Compra_Has_No_Items()
-    {
-        var command = new CreateCompraCommand(
-            new List<DetalleCompraDto>(),
-            "Observación");
 
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal(
-            CompraErrors.SinItems.Code,
-            result.FirstError?.Code);
-    }
-    [Fact]
-    public async Task Handle_Should_Return_Failure_When_Cantidad_Is_Invalid()
-    {
-        var command = new CreateCompraCommand(
-            new()
-            {
-            new DetalleCompraDto(1, 0, 100)
-            },
-            "Observación");
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        Assert.True(result.IsFailure);
-
-        Assert.Equal(
-            CompraErrors.CantidadInvalida.Code,
-            result.FirstError?.Code);
-    }
-    [Fact]
-    public async Task Handle_Should_Return_Failure_When_Precio_Is_Invalid()
-    {
-        var command = new CreateCompraCommand(
-            new()
-            {
-            new DetalleCompraDto(1, 2, 0)
-            },
-            "Observación");
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        Assert.True(result.IsFailure);
-
-        Assert.Equal(
-            CompraErrors.PrecioInvalido.Code,
-            result.FirstError?.Code);
-    }
-    [Fact]
-    public async Task Handle_Should_Return_Failure_When_Producto_Is_Invalid()
-    {
-        var command = new CreateCompraCommand(
-            new()
-            {
-            new DetalleCompraDto(0, 2, 100)
-            },
-            "Observación");
-
-        var result = await _handler.Handle(command, CancellationToken.None);
-
-        Assert.True(result.IsFailure);
-
-        Assert.Equal(
-            CompraErrors.ProductoInvalido.Code,
-            result.FirstError?.Code);
-    }
     [Fact]
     public async Task Handle_Should_Create_Compra_When_Request_Is_Valid()
     {

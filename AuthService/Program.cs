@@ -6,7 +6,6 @@ using BuildingBlocks;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using BuildingBlocks.Security;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,9 +26,6 @@ builder.Services.Configure<JwtOptions>(
     builder.Configuration.GetSection("Jwt"));
 
 builder.Services.AddScoped<JwtTokenGenerator>();
-
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 var app = builder.Build();
 

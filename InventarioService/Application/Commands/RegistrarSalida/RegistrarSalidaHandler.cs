@@ -1,37 +1,66 @@
-﻿using MediatR;
+﻿using BuildingBlocks.Application;
+using InventarioService.Domain.Errors;
 using InventarioService.Infrastructure.Persistence;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventarioService.Application.Commands.RegistrarSalida;
 
-public class RegistrarSalidaHandler : IRequestHandler<RegistrarSalidaCommand, bool>
+public class RegistrarSalidaHandler
+    : IRequestHandler<RegistrarSalidaCommand, Result>
 {
     private readonly InventarioDbContext _context;
     private readonly ILogger<RegistrarSalidaHandler> _logger;
-    public RegistrarSalidaHandler(InventarioDbContext context, ILogger<RegistrarSalidaHandler> logger)
+
+    public RegistrarSalidaHandler(
+        InventarioDbContext context,
+        ILogger<RegistrarSalidaHandler> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    public async Task<bool> Handle(RegistrarSalidaCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(
+        RegistrarSalidaCommand request,
+        CancellationToken cancellationToken)
     {
-        _logger.LogBusiness($"Registrando salida para producto {request.ProductoId}");
-        var stock = await _context.Existencias
-                           .FirstOrDefaultAsync(x => x.ProductoId == request.ProductoId, cancellationToken);
+        _logger.LogBusiness(
+            $"Registrando salida para producto {request.ProductoId}");
 
-        if (stock == null || stock.CantidadDisponible < request.Cantidad)
+        var stock = await _context.Existencias.FirstOrDefaultAsync(
+                x => x.ProductoId == request.ProductoId,
+                cancellationToken);
+
+        if (stock is null)
         {
-            _logger.LogBusiness($"Stock insuficiente para producto {request.ProductoId}");
-            throw new Exception("Stock insuficiente");
+            _logger.LogWarning(
+                "No existe inventario para producto {ProductoId}",
+                request.ProductoId);
+
+            return Result.Failure(
+                InventarioErrors.ProductoNoEncontrado);
         }
 
+        if (stock.CantidadDisponible < request.Cantidad)
+        {
+            _logger.LogWarning(
+                "Stock insuficiente para producto {ProductoId}. Disponible: {Disponible}, Solicitado: {Solicitado}",
+                request.ProductoId,
+                stock.CantidadDisponible,
+                request.Cantidad);
+
+            return Result.Failure(
+                InventarioErrors.StockInsuficiente);
+        }
 
         stock.CantidadDisponible -= request.Cantidad;
-        stock.FechaActualizacion = DateTime.Now;
-        _logger.LogBusiness($"Stock descontado para producto {request.ProductoId}");
+        stock.FechaActualizacion = DateTime.UtcNow;
+
         await _context.SaveChangesAsync(cancellationToken);
 
-        return true;
+        _logger.LogBusiness(
+            $"Stock descontado para producto {request.ProductoId}");
+
+        return Result.Success();
     }
 }
