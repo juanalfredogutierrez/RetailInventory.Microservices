@@ -18,4 +18,9 @@ public static class CompraErrors
         new(
             "Compra.PrecioInvalido",
             "El precio debe ser mayor a cero");
+
+    public static readonly Error ProductoInvalido =
+    new(
+        "Compra.ProductoInvalido",
+        "El producto es inválido.");
 }

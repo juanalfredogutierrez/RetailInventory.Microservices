@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductoService.Tests", "Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventarioService.Tests", "InventarioService.Tests\InventarioService.Tests.csproj", "{4953AF4B-38D5-4F4A-9AC7-46954D71D8FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransaccionService.Tests", "TransaccionService.Tests\TransaccionService.Tests.csproj", "{38A3A115-613D-4022-8D0B-9BE0AC2D095B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{4953AF4B-38D5-4F4A-9AC7-46954D71D8FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4953AF4B-38D5-4F4A-9AC7-46954D71D8FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4953AF4B-38D5-4F4A-9AC7-46954D71D8FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38A3A115-613D-4022-8D0B-9BE0AC2D095B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38A3A115-613D-4022-8D0B-9BE0AC2D095B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38A3A115-613D-4022-8D0B-9BE0AC2D095B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38A3A115-613D-4022-8D0B-9BE0AC2D095B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +95,7 @@ Global
 		{CFF17765-2605-43ED-8753-25765BDDDCAB} = {0B9B6195-0638-4390-9053-7C9B55BEEA08}
 		{9FC71BC1-D94C-4565-A0C1-B1F8F2C6F54A} = {0B9B6195-0638-4390-9053-7C9B55BEEA08}
 		{4953AF4B-38D5-4F4A-9AC7-46954D71D8FF} = {0B9B6195-0638-4390-9053-7C9B55BEEA08}
+		{38A3A115-613D-4022-8D0B-9BE0AC2D095B} = {0B9B6195-0638-4390-9053-7C9B55BEEA08}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {197D4ABD-30B0-4E09-9214-684121DB7E0C}
