@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -20,12 +20,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\BuildingBlocks\BuildingBlocks.csproj" />
-		<ProjectReference Include="..\ProductoService\ProductoService.csproj" />
-	</ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\BuildingBlocks.csproj" />
+    <ProjectReference Include="..\InventarioService\InventarioService.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Using Include="Xunit" />
-	</ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
 
 </Project>
