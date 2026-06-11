@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{C8
 		..\Users\Juan Gutierrez\Downloads\exo\TransaccionDb.sql = ..\Users\Juan Gutierrez\Downloads\exo\TransaccionDb.sql
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService.Tests", "AuthService.Tests\AuthService.Tests.csproj", "{CFF17765-2605-43ED-8753-25765BDDDCAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{D808F21A-4ECA-4B6B-8E86-EFC23B30456E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D808F21A-4ECA-4B6B-8E86-EFC23B30456E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D808F21A-4ECA-4B6B-8E86-EFC23B30456E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFF17765-2605-43ED-8753-25765BDDDCAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF17765-2605-43ED-8753-25765BDDDCAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF17765-2605-43ED-8753-25765BDDDCAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF17765-2605-43ED-8753-25765BDDDCAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{050C3C0D-E399-4BD6-8C8A-374578BDED16} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{94464019-2C02-428A-A80D-D4403EAEA3F6} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{D808F21A-4ECA-4B6B-8E86-EFC23B30456E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{CFF17765-2605-43ED-8753-25765BDDDCAB} = {0B9B6195-0638-4390-9053-7C9B55BEEA08}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {197D4ABD-30B0-4E09-9214-684121DB7E0C}

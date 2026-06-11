@@ -1,4 +1,5 @@
 ﻿using AuthService.Application;
+using AuthService.Domain.Entities;
 using AuthService.Infrastructure.Persistence;
 using AuthService.Infrastructure.Security;
 using BuildingBlocks;
@@ -6,6 +7,7 @@ using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using BuildingBlocks.Security;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +22,7 @@ builder.Services.AddBuildingBlocks();
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddScoped<PasswordHasher<Usuario>>();
 builder.Services.Configure<JwtOptions>(
     builder.Configuration.GetSection("Jwt"));
 

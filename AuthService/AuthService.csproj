@@ -7,6 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Application\Behaviors\**" />
+    <Compile Remove="Application\DTOs\**" />
+    <Compile Remove="Application\Queries\**" />
+    <Compile Remove="Application\Validators\**" />
+    <Content Remove="Application\Behaviors\**" />
+    <Content Remove="Application\DTOs\**" />
+    <Content Remove="Application\Queries\**" />
+    <Content Remove="Application\Validators\**" />
+    <EmbeddedResource Remove="Application\Behaviors\**" />
+    <EmbeddedResource Remove="Application\DTOs\**" />
+    <EmbeddedResource Remove="Application\Queries\**" />
+    <EmbeddedResource Remove="Application\Validators\**" />
+    <None Remove="Application\Behaviors\**" />
+    <None Remove="Application\DTOs\**" />
+    <None Remove="Application\Queries\**" />
+    <None Remove="Application\Validators\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MediatR" Version="14.1.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.27" />
@@ -22,10 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\Behaviors\" />
-    <Folder Include="Application\DTOs\" />
-    <Folder Include="Application\Queries\" />
-    <Folder Include="Application\Validators\" />
     <Folder Include="Domain\Enums\" />
     <Folder Include="Domain\Errors\" />
     <Folder Include="Domain\Events\" />

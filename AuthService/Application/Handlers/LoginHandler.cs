@@ -1,8 +1,10 @@
 ﻿using AuthService.Application.Commands.Login;
+using AuthService.Domain.Entities;
 using AuthService.Infrastructure.Persistence;
 using AuthService.Infrastructure.Security;
 using BuildingBlocks.Application;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 public class LoginHandler: IRequestHandler<LoginCommand, Result<string>>
@@ -10,15 +12,17 @@ public class LoginHandler: IRequestHandler<LoginCommand, Result<string>>
     private readonly AuthDbContext _context;
     private readonly JwtTokenGenerator _jwt;
     private readonly ILogger<LoginHandler> _logger;
-
+    private readonly PasswordHasher<Usuario> _passwordHasher;
     public LoginHandler(
         AuthDbContext context,
         JwtTokenGenerator jwt,
-        ILogger<LoginHandler> logger)
+        ILogger<LoginHandler> logger,
+        PasswordHasher<Usuario> passwordHasher)
     {
         _context = context;
         _jwt = jwt;
         _logger = logger;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<Result<string>> Handle(LoginCommand request,CancellationToken cancellationToken)
@@ -32,7 +36,32 @@ public class LoginHandler: IRequestHandler<LoginCommand, Result<string>>
         if (user is null)
         {
             _logger.LogBusiness(
-                $"Login fallido para {request.Username}");
+                $"Login fallido para {request.Username}. Usuario no encontrado.");
+
+            return Result<string>.Failure(
+                Errors.Unauthorized("Credenciales inválidas"));
+        }
+
+        if (!user.Activo)
+        {
+            _logger.LogBusiness(
+                $"Login fallido para {request.Username}. Usuario inactivo.");
+
+            return Result<string>.Failure(
+                Errors.Unauthorized("Usuario inactivo"));
+        }
+
+
+
+        var verificationResult = _passwordHasher.VerifyHashedPassword(
+            user,
+            user.ClaveHash,
+            request.Password);
+
+        if (verificationResult == PasswordVerificationResult.Failed)
+        {
+            _logger.LogBusiness(
+                $"Login fallido para {request.Username}. Contraseña inválida.");
 
             return Result<string>.Failure(
                 Errors.Unauthorized("Credenciales inválidas"));

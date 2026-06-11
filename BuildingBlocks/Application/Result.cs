@@ -1,6 +1,4 @@
-﻿
-
-namespace BuildingBlocks.Application;
+﻿namespace BuildingBlocks.Application;
 
 public class Result
 {
@@ -10,6 +8,8 @@ public class Result
 
     public IReadOnlyCollection<Error> Errors { get; }
 
+    public Error? FirstError => Errors.FirstOrDefault();
+
     protected Result(
         bool isSuccess,
         IEnumerable<Error>? errors = null)
@@ -18,7 +18,7 @@ public class Result
         Errors = errors?.ToList() ?? [];
     }
 
-    public static Result Success(List<object> productos)
+    public static Result Success()
         => new(true);
 
     public static Result Failure(params Error[] errors)
