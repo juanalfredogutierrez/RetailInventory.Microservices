@@ -22,14 +22,11 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AuthService\AuthService.csproj" />
 		<ProjectReference Include="..\BuildingBlocks\BuildingBlocks.csproj" />
+		<ProjectReference Include="..\ProductoService\ProductoService.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Using Include="Xunit" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Application\Product\" />
 	</ItemGroup>
 
 </Project>
