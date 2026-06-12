@@ -1,5 +1,5 @@
 ﻿using BuildingBlocks.Application;
-using BuildingBlocks.Messaging;
+using BuildingBlocks.Messaging.RabbiMQ;
 using MediatR;
 using TransaccionService.Application.DTOs;
 using TransaccionService.Domain.Entities;

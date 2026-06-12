@@ -1,5 +1,5 @@
 using BuildingBlocks;
-using BuildingBlocks.Messaging;
+using BuildingBlocks.Messaging.RabbiMQ;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +27,7 @@ builder.Services.AddHttpClient( "InventarioApi",
                         builder.Configuration["Services:InventarioApi"]!);
                     });
 
-builder.Services.AddRabbitMq(builder.Configuration["RabbitMq:Host"]!);
+builder.Services.AddRabbitMq(builder.Configuration);
 
 builder.Services.AddSingleton<IConnection>(sp =>
 {

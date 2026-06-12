@@ -3,7 +3,7 @@ using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
-namespace BuildingBlocks.Messaging;
+namespace BuildingBlocks.Messaging.RabbiMQ;
 
 public class RabbitMqPublisher : IMessagePublisher
 {
@@ -29,7 +29,7 @@ public class RabbitMqPublisher : IMessagePublisher
 
         var properties = new BasicProperties
         {
-            Headers = new Dictionary<string, object?>
+            Headers = new Dictionary<string, object>
             {
                 ["X-Trace-Id"] = traceId
             }

@@ -1,4 +1,5 @@
 using BuildingBlocks;
+using BuildingBlocks.Messaging.RabbiMQ;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using InventarioService.Application;
@@ -20,6 +21,7 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddHostedService<RabbitMqConsumerWorker>();
 builder.Services.AddApplication();
 builder.Services.AddBuildingBlocks();
+builder.Services.AddRabbitMq(builder.Configuration);
 
 var app = builder.Build();
 

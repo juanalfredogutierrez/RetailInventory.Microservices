@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Messaging;
+﻿using BuildingBlocks.Messaging.RabbiMQ;
 
 namespace TransaccionService.Domain.Events;
 
