@@ -1,9 +1,11 @@
-﻿using InventarioService.Application.Commands.RegistrarEntrada;
+﻿using BuildingBlocks.Messaging.RabbiMQ;
+using InventarioService.Application.Commands.RegistrarEntrada;
 using InventarioService.Application.Commands.RegistrarSalida;
 using InventarioService.Domain.Events;
 using InventarioService.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -14,20 +16,24 @@ namespace InventarioService.Infrastructure.Messaging;
 public sealed class RabbitMqConsumerWorker : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
-
+    private readonly RabbitMqOptions _rabbitMqOptions;
     private IConnection _connection;
     private IChannel _channel;
 
-    public RabbitMqConsumerWorker(IServiceScopeFactory scopeFactory)
+    public RabbitMqConsumerWorker(IServiceScopeFactory scopeFactory, IOptions<RabbitMqOptions> rabbitMqOptions)
     {
         _scopeFactory = scopeFactory;
+        _rabbitMqOptions = rabbitMqOptions.Value;
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         var factory = new ConnectionFactory
         {
-            HostName = "localhost"
+            HostName = _rabbitMqOptions.Host,
+            Port = _rabbitMqOptions.Port,
+            UserName = _rabbitMqOptions.UserName,
+            Password = _rabbitMqOptions.Password
         };
 
         _connection = await factory.CreateConnectionAsync(cancellationToken);

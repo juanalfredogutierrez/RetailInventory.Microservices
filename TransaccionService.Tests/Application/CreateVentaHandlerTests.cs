@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Messaging;
+﻿using BuildingBlocks.Messaging.RabbiMQ;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
