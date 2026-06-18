@@ -8,6 +8,10 @@ using InventarioService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+StartupConsoleExtensions.PrintStartupInfo(
+    builder.Environment.ApplicationName,
+    builder.Environment.EnvironmentName,
+    builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -23,8 +27,14 @@ builder.Services.AddApplication();
 builder.Services.AddBuildingBlocks();
 builder.Services.AddRabbitMq(builder.Configuration);
 
+
+
 var app = builder.Build();
 
+using var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetRequiredService<InventarioDbContext>();
+
+db.Database.Migrate();
 
 app.UseSwagger();
 app.UseSwaggerUI();

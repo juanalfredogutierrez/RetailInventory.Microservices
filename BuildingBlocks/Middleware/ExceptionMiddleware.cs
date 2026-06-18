@@ -30,7 +30,7 @@ public class ExceptionMiddleware
                 message = "Ocurrió un error inesperado",
                 traceId = context.TraceIdentifier
             };
-
+            Console.WriteLine($"Error: {ex.Message}, TraceId: {context.TraceIdentifier}");
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
     }

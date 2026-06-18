@@ -3,11 +3,14 @@ using BuildingBlocks.Messaging.RabbiMQ;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using Microsoft.EntityFrameworkCore;
-using RabbitMQ.Client;
 using TransaccionService.Application;
 using TransaccionService.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
+StartupConsoleExtensions.PrintStartupInfo(
+    builder.Environment.ApplicationName,
+    builder.Environment.EnvironmentName,
+    builder.Configuration);
 
 builder.Configuration
 .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json",
@@ -29,24 +32,6 @@ builder.Services.AddHttpClient( "InventarioApi",
 
 builder.Services.AddRabbitMq(builder.Configuration);
 
-builder.Services.AddSingleton<IConnection>(sp =>
-{
-    var factory = new ConnectionFactory
-    {
-        HostName = "localhost",
-        UserName = "guest",
-        Password = "guest"
-    };
-
-    return factory.CreateConnectionAsync().GetAwaiter().GetResult();
-});
-
-builder.Services.AddSingleton<IChannel>(sp =>
-{
-    var connection = sp.GetRequiredService<IConnection>();
-    return connection.CreateChannelAsync().GetAwaiter().GetResult();
-});
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -58,6 +43,12 @@ builder.Services.AddDbContext<TransaccionDbContext>(opt =>
 opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+
+using var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetRequiredService<TransaccionDbContext>();
+
+db.Database.Migrate();
 
 app.UseSwagger();
 app.UseSwaggerUI();

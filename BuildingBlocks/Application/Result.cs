@@ -8,18 +8,15 @@ public class Result
 
     public IReadOnlyCollection<Error> Errors { get; }
 
-    public Error? FirstError => Errors.FirstOrDefault();
+    public Error FirstError => Errors.FirstOrDefault();
 
-    protected Result(
-        bool isSuccess,
-        IEnumerable<Error>? errors = null)
+    protected Result(bool isSuccess,IEnumerable<Error> errors = null)
     {
         IsSuccess = isSuccess;
         Errors = errors?.ToList() ?? [];
     }
 
-    public static Result Success()
-        => new(true);
+    public static Result Success() => new(true);
 
     public static Result Failure(params Error[] errors)
         => new(false, errors);

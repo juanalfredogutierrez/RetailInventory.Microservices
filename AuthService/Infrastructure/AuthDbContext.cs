@@ -1,9 +1,10 @@
 ﻿using AuthService.Domain.Entities;
+using BuildingBlocks.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthService.Infrastructure.Persistence;
 
-public class AuthDbContext : DbContext
+public class AuthDbContext : BaseDbContext
 {
     public AuthDbContext(DbContextOptions<AuthDbContext> options)
         : base(options)
