@@ -122,4 +122,36 @@ public class CreateCompraValidatorTests
 
         result.Errors.Should().BeEmpty();
     }
+    [Fact]
+    public void Should_Have_Multiple_Errors_When_Command_Is_Invalid()
+    {
+        var command = new CreateCompraCommand(
+            new()
+            {
+            new DetalleCompraDto(0, 0, 0)
+            },
+            string.Empty);
+
+        var result = _validator.Validate(command);
+
+        result.IsValid.Should().BeFalse();
+
+        result.Errors.Should().HaveCountGreaterThan(1);
+    }
+    [Fact]
+    public void Should_Return_Multiple_Errors_When_Command_Is_Invalid()
+    {
+        var command = new CreateCompraCommand(
+            new()
+            {
+             new DetalleCompraDto(0, 0, 0)
+            },
+            string.Empty);
+
+        var result = _validator.Validate(command);
+
+        result.IsValid.Should().BeFalse();
+
+        result.Errors.Count.Should().BeGreaterThan(1);
+    }
 }

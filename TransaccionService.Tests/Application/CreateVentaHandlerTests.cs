@@ -1,5 +1,4 @@
-﻿using BuildingBlocks.Messaging.RabbiMQ;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -9,7 +8,6 @@ using System.Text.Json;
 using TransaccionService.Application.Commands.CreateVenta;
 using TransaccionService.Application.DTOs;
 using TransaccionService.Domain.Errors;
-using TransaccionService.Domain.Events;
 using TransaccionService.Infrastructure.Persistence;
 using TransaccionService.Tests.Helpers;
 
@@ -18,7 +16,6 @@ namespace TransaccionService.Tests.Application;
 public class CreateVentaHandlerTests
 {
     private readonly TransaccionDbContext _context;
-    private readonly Mock<IMessagePublisher> _publisherMock;
     private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
     private readonly Mock<ILogger<CreateVentaHandler>> _loggerMock;
 
@@ -31,9 +28,6 @@ public class CreateVentaHandlerTests
             .Options;
 
         _context = new TransaccionDbContext(options);
-
-        _publisherMock = new Mock<IMessagePublisher>();
-
         _httpClientFactoryMock = new Mock<IHttpClientFactory>();
 
         _loggerMock = new Mock<ILogger<CreateVentaHandler>>();
@@ -64,7 +58,6 @@ public class CreateVentaHandlerTests
 
         _handler = new CreateVentaHandler(
             _context,
-            _publisherMock.Object,
             _httpClientFactoryMock.Object,
             _loggerMock.Object);
     }
@@ -99,7 +92,6 @@ public class CreateVentaHandlerTests
 
         var handler = new CreateVentaHandler(
             _context,
-            _publisherMock.Object,
             _httpClientFactoryMock.Object,
             _loggerMock.Object);
 
@@ -129,12 +121,7 @@ public class CreateVentaHandlerTests
         // No debe persistir la venta
         _context.Ventas.Should().BeEmpty();
 
-        // No debe publicar eventos
-        _publisherMock.Verify(
-            x => x.PublishAsync(
-                It.IsAny<string>(),
-                It.IsAny<VentaRegistradaEvent>()),
-            Times.Never);
+
     }
     public async Task Handle_Should_Create_Venta_When_Request_Is_Valid()
     {
@@ -164,11 +151,7 @@ public class CreateVentaHandlerTests
 
         Assert.Equal(2, venta.Detalles.Count);
 
-        _publisherMock.Verify(
-        x => x.PublishAsync(
-        "venta.registrada",
-        It.IsAny<VentaRegistradaEvent>()),
-        Times.Once);
+      
     }
 
 }

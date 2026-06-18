@@ -11,12 +11,11 @@ public class TransaccionDbContext : BaseDbContext
     {
     }
 
- 
     public DbSet<Compra> Compras => Set<Compra>();
     public DbSet<DetalleCompra> DetalleCompras => Set<DetalleCompra>();
     public DbSet<Venta> Ventas => Set<Venta>();
     public DbSet<DetalleVenta> DetalleVentas => Set<DetalleVenta>();
-
+    public DbSet<OutboxMessage> OutboxMessages =>Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,6 +85,29 @@ public class TransaccionDbContext : BaseDbContext
 
             entity.Property(x => x.Subtotal)
                   .HasColumnType("decimal(18,2)");
+        });
+
+        // OUTBOX
+        modelBuilder.Entity<OutboxMessage>(entity =>
+        {
+            entity.ToTable("OutboxMessage");
+
+            entity.HasKey(x => x.Id);
+
+            entity.HasIndex(x => x.Uid)
+                  .IsUnique();
+
+            entity.Property(x => x.EventType)
+                  .IsRequired()
+                  .HasMaxLength(200);
+
+            entity.Property(x => x.Payload)
+                  .IsRequired();
+
+            entity.Property(x => x.OccurredOn)
+                  .IsRequired();
+
+            entity.Property(x => x.Error);
         });
     }
 
