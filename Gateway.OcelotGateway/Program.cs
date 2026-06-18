@@ -10,8 +10,11 @@ builder.Configuration
         $"ocelot.{builder.Environment.EnvironmentName}.json",
         optional: false,
         reloadOnChange: true);
-Console.WriteLine(
-    $"Environment: {builder.Environment.EnvironmentName}");
+
+StartupConsoleExtensions.PrintStartupInfo(
+    builder.Environment.ApplicationName,
+    builder.Environment.EnvironmentName,
+    builder.Configuration);
 
 builder.Services.AddCors(options =>
 {

@@ -4,7 +4,7 @@ using TransaccionService.Domain.Entities;
 
 namespace TransaccionService.Infrastructure.Persistence;
 
-public class TransaccionDbContext : DbContext
+public class TransaccionDbContext : BaseDbContext
 {
     public TransaccionDbContext(DbContextOptions<TransaccionDbContext> options)
         : base(options)
@@ -89,24 +89,4 @@ public class TransaccionDbContext : DbContext
         });
     }
 
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        var entries = ChangeTracker
-            .Entries<AuditableEntity>();
-
-        foreach (var entry in entries)
-        {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedAt = DateTime.Now;
-                entry.Entity.UpdatedAt = DateTime.Now;
-            }
-
-            if (entry.State == EntityState.Modified)
-                entry.Entity.UpdatedAt = DateTime.Now;
-        }
-
-        return base.SaveChangesAsync(cancellationToken);
-    }
 }

@@ -6,7 +6,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "authservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/auth/{everything}",
@@ -19,7 +19,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "productoservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/productos/{everything}",
@@ -35,7 +35,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "transaccionservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/transacciones/{everything}",
@@ -51,7 +51,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "inventarioservice",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/inventario/{everything}",

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventarioService.Infrastructure.Persistence;
 
-public class InventarioDbContext : DbContext
+public class InventarioDbContext : BaseDbContext
 {
     public InventarioDbContext(DbContextOptions<InventarioDbContext> options)
         : base(options) { }
@@ -21,23 +21,5 @@ public class InventarioDbContext : DbContext
         modelBuilder.Entity<ExistenciaProducto>().ToTable("ExistenciaProducto");
         modelBuilder.Entity<EventoProcesado>().ToTable("EventoProcesado");
     }
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        var entries = ChangeTracker
-            .Entries<AuditableEntity>();
 
-        foreach (var entry in entries)
-        {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedAt = DateTime.Now;
-                entry.Entity.UpdatedAt = DateTime.Now;
-            }
-
-            if (entry.State == EntityState.Modified)
-                entry.Entity.UpdatedAt = DateTime.Now;
-        }
-
-        return base.SaveChangesAsync(cancellationToken);
-    }
 }

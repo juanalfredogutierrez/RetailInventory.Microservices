@@ -7,6 +7,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Infrastructure\Messaging\**" />
+	  <Compile Remove="Infrastructure\Repositories\**" />
+	  <Compile Remove="Infrastructure\Security\**" />
+	  <Content Remove="Infrastructure\Messaging\**" />
+	  <Content Remove="Infrastructure\Repositories\**" />
+	  <Content Remove="Infrastructure\Security\**" />
+	  <EmbeddedResource Remove="Infrastructure\Messaging\**" />
+	  <EmbeddedResource Remove="Infrastructure\Repositories\**" />
+	  <EmbeddedResource Remove="Infrastructure\Security\**" />
+	  <None Remove="Infrastructure\Messaging\**" />
+	  <None Remove="Infrastructure\Repositories\**" />
+	  <None Remove="Infrastructure\Security\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="12.1.1" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
 		<PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
@@ -28,9 +43,6 @@
 		<Folder Include="Application\Queries\" />
 		<Folder Include="Application\Validators\" />
 		<Folder Include="Domain\Enums\" />
-		<Folder Include="Infrastructure\Messaging\" />
-		<Folder Include="Infrastructure\Repositories\" />
-		<Folder Include="Infrastructure\Security\" />
 	</ItemGroup>
 
 

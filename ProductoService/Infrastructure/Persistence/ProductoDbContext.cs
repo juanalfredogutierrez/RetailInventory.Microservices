@@ -4,7 +4,7 @@ using ProductoService.Domain.Entities;
 
 namespace ProductoService.Infrastructure.Persistence;
 
-public class ProductoDbContext : DbContext
+public class ProductoDbContext : BaseDbContext  
 {
     public ProductoDbContext(DbContextOptions<ProductoDbContext> options)
         : base(options)
@@ -26,23 +26,5 @@ public class ProductoDbContext : DbContext
             entity.Property(x => x.Precio).HasColumnType("decimal(18,2)");
         });
     }
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        var entries = ChangeTracker
-            .Entries<AuditableEntity>();
-
-        foreach (var entry in entries)
-        {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedAt = DateTime.Now;
-                entry.Entity.UpdatedAt = DateTime.Now;
-            }
-
-            if (entry.State == EntityState.Modified)
-                entry.Entity.UpdatedAt = DateTime.Now;
-        }
-
-        return base.SaveChangesAsync(cancellationToken);
-    }
+  
 }
