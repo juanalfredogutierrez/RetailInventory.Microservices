@@ -66,5 +66,9 @@
 
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:5000"
+  },
+
+  "Serilog": {
+    "SeqUrl": "http://localhost:5341"
   }
 }

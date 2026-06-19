@@ -1,5 +1,6 @@
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
+using BuildingBlocks.Observability;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProductoService.Application;
@@ -13,6 +14,7 @@ StartupConsoleExtensions.PrintStartupInfo(
     builder.Environment.EnvironmentName,
     builder.Configuration);
 
+builder.Host.AddSerilogLogging(builder);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

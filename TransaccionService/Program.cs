@@ -2,6 +2,7 @@ using BuildingBlocks;
 using BuildingBlocks.Messaging.RabbiMQ;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
+using BuildingBlocks.Observability;
 using Microsoft.EntityFrameworkCore;
 using TransaccionService.Application;
 using TransaccionService.Infrastructure.Messaging;
@@ -12,6 +13,8 @@ StartupConsoleExtensions.PrintStartupInfo(
     builder.Environment.ApplicationName,
     builder.Environment.EnvironmentName,
     builder.Configuration);
+
+builder.Host.AddSerilogLogging(builder);
 
 builder.Configuration
 .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json",

@@ -45,7 +45,7 @@
       }
     },
 
-    { 
+    {
       "DownstreamPathTemplate": "/api/inventario/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -64,5 +64,8 @@
 
   "GlobalConfiguration": {
     "BaseUrl": "http://gateway"
+  },
+  "Serilog": {
+    "SeqUrl": "http://seq"
   }
 }

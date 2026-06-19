@@ -1,3 +1,4 @@
+using BuildingBlocks.Observability;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
@@ -5,6 +6,9 @@ using Ocelot.Middleware;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.AddSerilogLogging(builder);
+
 builder.Configuration
     .AddJsonFile(
         $"ocelot.{builder.Environment.EnvironmentName}.json",
