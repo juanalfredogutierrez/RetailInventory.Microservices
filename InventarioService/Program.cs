@@ -2,6 +2,7 @@ using BuildingBlocks;
 using BuildingBlocks.Messaging.RabbiMQ;
 using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
+using BuildingBlocks.Observability;
 using InventarioService.Application;
 using InventarioService.Infrastructure.Messaging;
 using InventarioService.Infrastructure.Persistence;
@@ -13,6 +14,7 @@ StartupConsoleExtensions.PrintStartupInfo(
     builder.Environment.EnvironmentName,
     builder.Configuration);
 
+builder.Host.AddSerilogLogging(builder);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

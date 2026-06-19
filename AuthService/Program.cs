@@ -9,12 +9,15 @@ using BuildingBlocks.Middleware.Correlation;
 using BuildingBlocks.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using BuildingBlocks.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 StartupConsoleExtensions.PrintStartupInfo(
     builder.Environment.ApplicationName,
     builder.Environment.EnvironmentName,
     builder.Configuration);
+
+builder.Host.AddSerilogLogging(builder);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -32,6 +35,7 @@ builder.Services.Configure<JwtOptions>(
     builder.Configuration.GetSection("Jwt"));
 
 builder.Services.AddScoped<JwtTokenGenerator>();
+
 
 var app = builder.Build();
 using var scope = app.Services.CreateScope();
