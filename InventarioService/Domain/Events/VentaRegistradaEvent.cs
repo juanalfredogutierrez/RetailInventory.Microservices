@@ -1,8 +1,9 @@
-﻿namespace InventarioService.Domain.Events;
+﻿using BuildingBlocks.Messaging.RabbiMQ;
 
-public class VentaRegistradaEvent
+namespace InventarioService.Domain.Events;
+
+public class VentaRegistradaEvent: IntegrationEvent
 {
-    public Guid EventId { get; set; }
     public string NumeroVenta { get; set; }
     public List<VentaItem> Items { get; set; }
 }

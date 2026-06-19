@@ -19,9 +19,7 @@ public sealed class OutboxMessage : AuditableEntity
     {
     }
 
-    public OutboxMessage(
-        string eventType,
-        string payload)
+    public OutboxMessage(string eventType,string payload)
     {
         EventType = eventType;
         Payload = payload;
@@ -31,13 +29,13 @@ public sealed class OutboxMessage : AuditableEntity
     public void MarkAsProcessed()
     {
         ProcessedOn = DateTime.UtcNow;
+        Error = null;
     }
 
     public void MarkAsFailed(string error)
     {
         Error = error;
     }
-
     public static OutboxMessage Create(string eventType,object payload)
     {
         return new OutboxMessage(eventType,JsonSerializer.Serialize(payload));
