@@ -1,72 +1,71 @@
-# JMCloudLab.RetailInventoryPlatform
+# RetailInventory.Microservices
 
-## Descripción
+Enterprise Inventory Management Platform built with .NET 8 using a Microservices Architecture, CQRS, Event-Driven Communication, RabbitMQ, Docker, and SQL Server.
 
-Plataforma de gestión de inventario desarrollada bajo una arquitectura basada en microservicios utilizando .NET 8, RabbitMQ, SQL Server y Ocelot.
-
-La solución implementa autenticación JWT, gestión de productos, compras, ventas y actualización de inventario mediante comunicación asíncrona basada en eventos.
+The solution demonstrates modern backend engineering practices including Clean Architecture, Outbox Pattern, Inbox Pattern, Distributed Trace Propagation, JWT Authentication, API Gateway, and asynchronous messaging.
 
 ---
 
-# Arquitectura General
+# Overview
+
+RetailInventory is a sample enterprise-grade inventory platform designed to showcase modern software architecture patterns and microservices communication strategies.
+
+The platform manages:
+
+* Product Catalog
+* Purchases
+* Sales
+* Inventory Management
+* Authentication & Authorization
+
+The solution emphasizes scalability, reliability, observability, and maintainability.
+
+---
+
+# Architecture
 
 ```text
-┌─────────────────────────────┐
-│      Angular Frontend       │
-└──────────────┬──────────────┘
-               │
-               ▼
-┌─────────────────────────────┐
-│    API Gateway (Ocelot)     │
-└──────────────┬──────────────┘
-               │
-     ┌─────────┼─────────┐
-     │         │         │
-     ▼         ▼         ▼
+                           ┌─────────────────────┐
+                           │   Angular Frontend  │
+                           └──────────┬──────────┘
+                                      │
+                                      ▼
+                           ┌─────────────────────┐
+                           │ Ocelot API Gateway  │
+                           └──────────┬──────────┘
+                                      │
+        ┌─────────────────────────────┼─────────────────────────────┐
+        │                             │                             │
+        ▼                             ▼                             ▼
 
-┌─────────┐ ┌─────────┐ ┌─────────┐
-│  Auth   │ │Producto │ │ Compra  │
-│ Service │ │ Service │ │ Service │
-└─────────┘ └─────────┘ └────┬────┘
-                             │
-                             ▼
+ ┌─────────────┐              ┌─────────────┐             ┌─────────────┐
+ │ AuthService │              │ProductoSvc  │             │TransaccionSvc│
+ └─────────────┘              └─────────────┘             └──────┬──────┘
+                                                                  │
+                                                                  │
+                                                         Outbox Pattern
+                                                                  │
+                                                                  ▼
 
-                    ┌────────────────┐
-                    │ InventarioSvc  │
-                    └───────┬────────┘
-                            │
-                            ▼
+                                                           ┌──────────┐
+                                                           │ RabbitMQ │
+                                                           └────┬─────┘
+                                                                │
+                                                                ▼
 
-                     ┌────────────┐
-                     │ RabbitMQ   │
-                     └─────┬──────┘
-                           │
-                           ▼
+                                                        Inbox Pattern
+                                                                │
+                                                                ▼
 
-                     ┌────────────┐
-                     │ SQL Server │
-                     └────────────┘
+                                                      ┌────────────────┐
+                                                      │InventarioSvc   │
+                                                      └────────────────┘
+
 ```
 
 ---
 
-# Tecnologías
-
-* .NET 8
-* ASP.NET Core Web API
-* Entity Framework Core
-* SQL Server
-* MediatR
-* CQRS
-* RabbitMQ
-* JWT Authentication
-* Ocelot API Gateway
-* Docker
-* Docker Compose
-
----
-
-# Patrones Implementados
+# Implemented Architecture Patterns
 
 ## Clean Architecture
 
@@ -77,68 +76,188 @@ Domain
 Infrastructure
 ```
 
-## CQRS
-
-Separación de comandos y consultas mediante MediatR.
-
-Ejemplos:
-
-```text
-Commands
-- CreateProductoCommand
-- RegistrarCompraCommand
-- RegistrarVentaCommand
-
-Queries
-- GetProductosQuery
-```
-
-## Event Driven Architecture
-
-Comunicación desacoplada entre servicios mediante RabbitMQ.
+Responsibilities are clearly separated to improve maintainability, testability, and scalability.
 
 ---
 
-# Microservicios
+## CQRS
+
+Command Query Responsibility Segregation implemented using MediatR.
+
+### Commands
+
+```text
+CreateProductoCommand
+CreateCompraCommand
+CreateVentaCommand
+RegistrarEntradaCommand
+RegistrarSalidaCommand
+```
+
+### Queries
+
+```text
+GetProductosQuery
+GetInventarioQuery
+GetStockQuery
+```
+
+---
+
+## Event-Driven Architecture
+
+Services communicate asynchronously through RabbitMQ events.
+
+Examples:
+
+```text
+compra.registrada
+venta.registrada
+```
+
+---
+
+## Outbox Pattern
+
+Guarantees reliable event publication.
+
+Events are first persisted in the database and later published asynchronously by a dedicated background worker.
+
+Benefits:
+
+* No event loss
+* Better resilience
+* Eventual consistency
+* Reliable integration
+
+---
+
+## Inbox Pattern
+
+Provides idempotent event processing.
+
+Each processed event is stored and validated before execution to avoid duplicate processing.
+
+Benefits:
+
+* Safe retries
+* Duplicate message protection
+* Reliable consumer behavior
+
+---
+
+## Distributed Trace Propagation
+
+Trace identifiers are propagated between microservices and integration events.
+
+Benefits:
+
+* End-to-end request tracing
+* Easier troubleshooting
+* Improved observability
+
+---
+
+# Technologies
+
+### Backend
+
+* .NET 8
+* ASP.NET Core Web API
+* Entity Framework Core
+* SQL Server
+* MediatR
+* FluentValidation
+
+### Messaging
+
+* RabbitMQ
+* Outbox Pattern
+* Inbox Pattern
+
+### Security
+
+* JWT Authentication
+* Role-Based Authorization
+
+### Infrastructure
+
+* Docker
+* Docker Compose
+* Ocelot API Gateway
+
+### Testing
+
+* xUnit
+* FluentAssertions
+* Moq
+
+---
+
+# Microservices
 
 ## AuthService
 
-* Autenticación de usuarios
-* Generación de JWT
-* Validación de credenciales
+Responsible for:
+
+* User Authentication
+* JWT Token Generation
+* Role Management
+
+---
 
 ## ProductoService
 
-* Registro de productos
-* Consulta de productos
+Responsible for:
 
-## CompraService
+* Product Registration
+* Product Management
+* Product Queries
 
-* Registro de compras
-* Publicación de eventos
+---
+
+## TransaccionService
+
+Responsible for:
+
+* Purchase Registration
+* Sales Registration
+* Event Publication
+* Outbox Management
+
+---
 
 ## InventarioService
 
-* Gestión de inventario
-* Actualización de stock
-* Consumo de eventos RabbitMQ
+Responsible for:
 
-## ApiGateway
-
-* Enrutamiento centralizado
-* Seguridad
-* Punto único de acceso
+* Inventory Control
+* Stock Updates
+* Event Consumption
+* Inbox Processing
 
 ---
 
-# Flujo de Compra
+# Purchase Flow
 
 ```text
-Usuario
+Client
    │
    ▼
 
-CompraService
+TransaccionService
+   │
+   ▼
+
+Save Purchase
+   │
+   ▼
+
+OutboxMessage
+   │
+   ▼
+
+OutboxPublisherWorker
    │
    ▼
 
@@ -150,19 +269,35 @@ InventarioService
    │
    ▼
 
-SQL Server
+Inbox Validation
+   │
+   ▼
+
+Inventory Update
 ```
 
 ---
 
-# Flujo de Venta
+# Sales Flow
 
 ```text
-Usuario
+Client
    │
    ▼
 
-VentaService
+TransaccionService
+   │
+   ▼
+
+Stock Validation
+   │
+   ▼
+
+Save Sale
+   │
+   ▼
+
+OutboxMessage
    │
    ▼
 
@@ -174,90 +309,93 @@ InventarioService
    │
    ▼
 
-SQL Server
+Inbox Validation
+   │
+   ▼
+
+Inventory Deduction
 ```
 
 ---
 
-# Docker Compose
+# Docker Support
 
-La solución puede ejecutarse utilizando Docker Compose.
+The entire platform can be executed using Docker Compose.
 
-Servicios incluidos:
+Included services:
 
-* ApiGateway
+* API Gateway
 * AuthService
 * ProductoService
-* CompraService
+* TransaccionService
 * InventarioService
 * SQL Server
 * RabbitMQ
 
-## Ejecutar
+### Start
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.infrastructure.yml up -d
+
+docker compose -f docker-compose.services.yml up -d
 ```
 
-## Detener
+### Stop
 
 ```bash
 docker compose down
 ```
 
 ---
-# Scripts de Base de Datos
 
-La solución incluye los scripts de creación de base de datos correspondientes a cada microservicio.
+# Features
 
-database/
-│
-├── AuthDb.sql
-├── ProductoDb.sql
-├── CompraDb.sql
-└── InventarioDb.sql
-
-Cada script contiene la estructura necesaria para la creación de las tablas utilizadas por su respectivo servicio.
-# Consideraciones
-
-Debido al tiempo limitado de la evaluación técnica se priorizó:
-
-* Arquitectura de microservicios
-* Seguridad JWT
-* Comunicación asíncrona
-* Integración entre servicios
-* Flujos funcionales de negocio
+* JWT Authentication
+* API Gateway
+* CQRS
+* FluentValidation
+* Result Pattern
+* RabbitMQ Integration
+* Outbox Pattern
+* Inbox Pattern
+* Distributed Trace Propagation
+* Dockerized Infrastructure
+* Automatic EF Core Migrations
+* Automatic Seed Data
+* Unit Testing
+* Centralized BuildingBlocks
 
 ---
-## Documentación
 
-La solución incluye documentación interactiva mediante Swagger.
+# Current Releases
 
-Debido a las restricciones de tiempo de la evaluación técnica, no se incluyó una colección Postman exportada, aunque todos los endpoints pueden ser explorados y ejecutados desde Swagger.
-Acceso:
+```text
+v1.0.0 Initial Stable Release
+v1.0.1 Validation Pipeline Refactor
+v1.1.0 Dockerized Microservices Platform
+v1.2.0 Outbox Pattern & Distributed Trace Propagation
+```
 
-- AuthService: /swagger
-- ProductoService: /swagger
-- CompraService: /swagger
-- InventarioService: /swagger
-  
-# Mejoras Futuras
+---
 
-* Pruebas Unitarias
-* Pruebas de Integración
-* Observabilidad
-* Logging centralizado
-* CI/CD
-* Monitoreo
+# Future Improvements
 
-# Autor
+* Serilog + Seq
+* OpenTelemetry
+* Distributed Metrics
+* Dead Letter Queue (DLQ)
+* Retry Policies
+* Kubernetes Deployment
+* GitHub Actions CI/CD
+* Integration Tests
+* Contract-First APIs
 
-**Juan Gutierrez**
+---
 
-Desarrollador .NET / Angular
+# Author
 
-<img width="440" height="557" alt="image" src="https://github.com/user-attachments/assets/33037e1c-1355-4157-8b4c-5ad8c93dc236" />
+Juan Gutierrez
 
+Senior Software Engineer | Technical Leader
 
-<img width="1352" height="829" alt="image" src="https://github.com/user-attachments/assets/b033d50c-fda4-40c5-be8b-825756231a4f" />
-
+.NET • Azure • Microservices • DDD • CQRS • Event-Driven Architecture
