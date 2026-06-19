@@ -1,6 +1,7 @@
 ﻿using BuildingBlocks.Application;
-using BuildingBlocks.Messaging.RabbiMQ;
+using BuildingBlocks.Correlation;
 using MediatR;
+using System.Text.Json;
 using TransaccionService.Application.DTOs;
 using TransaccionService.Domain.Entities;
 using TransaccionService.Domain.Errors;
@@ -13,24 +14,19 @@ public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Result<Gui
 {
     private readonly ILogger<CreateVentaHandler> _logger;
     private readonly TransaccionDbContext _context;
-    private readonly IMessagePublisher _publisher;
     private readonly IHttpClientFactory _httpClientFactory;
 
     public CreateVentaHandler(
         TransaccionDbContext context,
-        IMessagePublisher publisher,
         IHttpClientFactory httpClientFactory,
         ILogger<CreateVentaHandler> logger)
     {
         _context = context;
-        _publisher = publisher;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
 
-    public async Task<Result<Guid>> Handle(
-        CreateVentaCommand request,
-        CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateVentaCommand request,CancellationToken cancellationToken)
     {
         _logger.LogBusiness($"Registrando venta con {request.Detalles.Count} productos");
 
@@ -38,8 +34,7 @@ public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Result<Gui
         {
             _logger.LogBusiness($"Consultando stock del producto {detalle.ProductoId}");
 
-            var stockDisponible =
-                await ObtenerStockAsync(detalle.ProductoId);
+            var stockDisponible = await ObtenerStockAsync(detalle.ProductoId);
 
             if (stockDisponible < detalle.Cantidad)
             {
@@ -93,24 +88,28 @@ public class CreateVentaHandler : IRequestHandler<CreateVentaCommand, Result<Gui
 
         _context.Ventas.Add(venta);
 
-        await _context.SaveChangesAsync(cancellationToken);
-
         _logger.LogInformation("Venta {NumeroVenta} registrada", venta.NumeroVenta);
 
-        await _publisher.PublishAsync( "venta.registrada",
-            new VentaRegistradaEvent
-            {
-                NumeroVenta = venta.NumeroVenta,
-                Items = venta.Detalles
-                    .Select(x => new VentaRegistradaItemEvent
-                    {
-                        ProductoId = x.ProductoId,
-                        Cantidad = x.Cantidad
-                    })
-                    .ToList()
-            });
+        var integrationEvent = new VentaRegistradaEvent
+        {
+            NumeroVenta = venta.NumeroVenta,
+            TraceId = CorrelationContext.TraceId,
 
-        _logger.LogInformation("Evento venta.registrada enviado");
+            Items = venta.Detalles
+              .Select(x => new VentaRegistradaItemEvent 
+              {
+                  ProductoId = x.ProductoId,
+                  Cantidad = x.Cantidad
+              })
+              .ToList()
+        };
+
+        _context.OutboxMessages.Add(new OutboxMessage("venta.registrada",
+                                        JsonSerializer.Serialize(integrationEvent)));
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Evento venta.registrada agregado a Outbox");
 
         return Result<Guid>.Success(venta.Uid);
     }

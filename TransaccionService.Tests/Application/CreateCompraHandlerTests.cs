@@ -1,10 +1,9 @@
-﻿using BuildingBlocks.Messaging.RabbiMQ;
+﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;
 using TransaccionService.Application.Commands.CreateCompra;
-using TransaccionService.Domain.Events;
 using TransaccionService.Infrastructure.Persistence;
 using TransaccionService.Tests.Helpers;
 
@@ -12,7 +11,6 @@ namespace TransaccionService.Tests.Application;
 public class CreateCompraHandlerTests
 {
     private readonly TransaccionDbContext _context;
-    private readonly Mock<IMessagePublisher> _publisherMock;
     private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
     private readonly Mock<ILogger<CreateCompraHandler>> _loggerMock;
     private readonly CreateCompraHandler _handler;
@@ -25,10 +23,7 @@ public class CreateCompraHandlerTests
 
         _context = new TransaccionDbContext(options);
 
-        _publisherMock = new Mock<IMessagePublisher>();
-
-        _loggerMock =
-        new Mock<ILogger<CreateCompraHandler>>();
+        _loggerMock = new Mock<ILogger<CreateCompraHandler>>();
 
         var httpClient = new HttpClient(
        new FakeHttpMessageHandler(() =>
@@ -46,7 +41,6 @@ public class CreateCompraHandlerTests
 
         _handler = new CreateCompraHandler(
         _context,
-        _publisherMock.Object,
         _loggerMock.Object,
         _httpClientFactoryMock.Object);
     }
@@ -81,11 +75,15 @@ public class CreateCompraHandlerTests
 
         Assert.Equal(2, compra.Detalles.Count);
 
-        _publisherMock.Verify(
-            x => x.PublishAsync(
-                "compra.registrada",
-                It.IsAny<CompraRegistradaEvent>()),
-            Times.Once);
+        var outboxMessages = await _context.OutboxMessages.ToListAsync();
+        outboxMessages.Should().HaveCount(1);
+
+        var outboxMessage = outboxMessages.Single();
+
+        outboxMessage.EventType.Should().Be("compra.registrada");
+
+        outboxMessage.ProcessedOn.Should().BeNull();
+
+        outboxMessage.Payload.Should().NotBeNullOrWhiteSpace();
     }
 }
-

@@ -1,8 +1,8 @@
 ﻿using BuildingBlocks.Application;
-using BuildingBlocks.Messaging.RabbiMQ;
+using BuildingBlocks.Correlation;
 using MediatR;
+using System.Text.Json;
 using TransaccionService.Domain.Entities;
-using TransaccionService.Domain.Errors;
 using TransaccionService.Domain.Events;
 using TransaccionService.Infrastructure.Persistence;
 
@@ -11,18 +11,15 @@ namespace TransaccionService.Application.Commands.CreateCompra;
 public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Result<Guid>>
 {
     private readonly TransaccionDbContext _context;
-    private readonly IMessagePublisher _publisher;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<CreateCompraHandler> _logger;
 
     public CreateCompraHandler(
         TransaccionDbContext context,
-        IMessagePublisher publisher,
         ILogger<CreateCompraHandler> logger,
         IHttpClientFactory httpClientFactory        )
     {
         _context = context;
-        _publisher = publisher;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
     }
@@ -52,9 +49,6 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Result<G
 
         _context.Compras.Add(compra);
 
-        await _context.SaveChangesAsync(
-            cancellationToken);
-
         var productoClient =_httpClientFactory.CreateClient("ProductoApi");
 
         foreach (var item in compra.Detalles)
@@ -73,22 +67,28 @@ public class CreateCompraHandler : IRequestHandler<CreateCompraCommand, Result<G
         }
         _logger.LogInformation("Compra {NumeroCompra} registrada",compra.NumeroCompra);
 
-        await _publisher.PublishAsync( "compra.registrada",
-                                    new CompraRegistradaEvent
-                                    {
-                                        NumeroCompra = compra.NumeroCompra,
-                                        Total = compra.TotalCompra,
+        var integrationEvent = new CompraRegistradaEvent
+        {
+            NumeroCompra = compra.NumeroCompra,
+            Total = compra.TotalCompra,
+            TraceId = CorrelationContext.TraceId,
+        
+            Items = compra.Detalles
+                .Select(x => new CompraRegistradaItemEvent
+                {
+                    ProductoId = x.ProductoId,
+                    Cantidad = x.Cantidad,
+                    PrecioUnitario = x.PrecioUnitario
+                })
+                .ToList()
+        };
 
-                                        Items = compra.Detalles
-                                            .Select(x => new CompraRegistradaItemEvent
-                                            {
-                                                ProductoId = x.ProductoId,
-                                                Cantidad = x.Cantidad,
-                                                PrecioUnitario = x.PrecioUnitario
-                                            })
-                                            .ToList()
-                                    });
-        _logger.LogInformation("Evento compra.registrada enviado");
+        _context.OutboxMessages.Add( new OutboxMessage("compra.registrada",
+                                        JsonSerializer.Serialize(integrationEvent)));
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Evento compra.registrada agregado a Outbox");
 
 
         return Result<Guid>.Success(compra.Uid);

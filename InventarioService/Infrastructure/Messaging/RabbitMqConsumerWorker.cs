@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Messaging.RabbiMQ;
+﻿using BuildingBlocks.Correlation;
+using BuildingBlocks.Messaging.RabbiMQ;
 using InventarioService.Application.Commands.RegistrarEntrada;
 using InventarioService.Application.Commands.RegistrarSalida;
 using InventarioService.Domain.Events;
@@ -135,6 +136,8 @@ public sealed class RabbitMqConsumerWorker : BackgroundService
         if (evt is null)
             return;
 
+        CorrelationContext.TraceId = evt.TraceId;
+
         if (await ExisteEvento(db, evt.EventId))
             return;
 
@@ -146,7 +149,7 @@ public sealed class RabbitMqConsumerWorker : BackgroundService
             await mediator.Send(new RegistrarEntradaCommand(
                 item.ProductoId,
                 item.Cantidad,
-                evt.NumeroCompra ));
+                evt.NumeroCompra));
         }
     }
 
@@ -156,6 +159,8 @@ public sealed class RabbitMqConsumerWorker : BackgroundService
 
         if (evt is null)
             return;
+
+        CorrelationContext.TraceId = evt.TraceId;
 
         if (await ExisteEvento(db, evt.EventId))
             return;

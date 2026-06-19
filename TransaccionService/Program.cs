@@ -4,6 +4,7 @@ using BuildingBlocks.Middleware;
 using BuildingBlocks.Middleware.Correlation;
 using Microsoft.EntityFrameworkCore;
 using TransaccionService.Application;
+using TransaccionService.Infrastructure.Messaging;
 using TransaccionService.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +42,7 @@ builder.Services.AddBuildingBlocks();
 
 builder.Services.AddDbContext<TransaccionDbContext>(opt =>
 opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHostedService<OutboxPublisherWorker>();
 
 var app = builder.Build();
 

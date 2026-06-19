@@ -7,15 +7,35 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Application\Behaviors\**" />
+	  <Compile Remove="Application\Handlers\**" />
+	  <Compile Remove="Application\Queries\**" />
+	  <Compile Remove="Application\Validators\**" />
+	  <Compile Remove="Domain\Enums\**" />
 	  <Compile Remove="Infrastructure\Messaging\**" />
 	  <Compile Remove="Infrastructure\Repositories\**" />
 	  <Compile Remove="Infrastructure\Security\**" />
+	  <Content Remove="Application\Behaviors\**" />
+	  <Content Remove="Application\Handlers\**" />
+	  <Content Remove="Application\Queries\**" />
+	  <Content Remove="Application\Validators\**" />
+	  <Content Remove="Domain\Enums\**" />
 	  <Content Remove="Infrastructure\Messaging\**" />
 	  <Content Remove="Infrastructure\Repositories\**" />
 	  <Content Remove="Infrastructure\Security\**" />
+	  <EmbeddedResource Remove="Application\Behaviors\**" />
+	  <EmbeddedResource Remove="Application\Handlers\**" />
+	  <EmbeddedResource Remove="Application\Queries\**" />
+	  <EmbeddedResource Remove="Application\Validators\**" />
+	  <EmbeddedResource Remove="Domain\Enums\**" />
 	  <EmbeddedResource Remove="Infrastructure\Messaging\**" />
 	  <EmbeddedResource Remove="Infrastructure\Repositories\**" />
 	  <EmbeddedResource Remove="Infrastructure\Security\**" />
+	  <None Remove="Application\Behaviors\**" />
+	  <None Remove="Application\Handlers\**" />
+	  <None Remove="Application\Queries\**" />
+	  <None Remove="Application\Validators\**" />
+	  <None Remove="Domain\Enums\**" />
 	  <None Remove="Infrastructure\Messaging\**" />
 	  <None Remove="Infrastructure\Repositories\**" />
 	  <None Remove="Infrastructure\Security\**" />
@@ -35,14 +55,6 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.27" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.27" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Application\Behaviors\" />
-		<Folder Include="Application\Handlers\" />
-		<Folder Include="Application\Queries\" />
-		<Folder Include="Application\Validators\" />
-		<Folder Include="Domain\Enums\" />
 	</ItemGroup>
 
 

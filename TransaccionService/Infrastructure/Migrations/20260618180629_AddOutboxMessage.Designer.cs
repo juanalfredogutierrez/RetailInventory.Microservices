@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransaccionService.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using TransaccionService.Infrastructure.Persistence;
 namespace TransaccionService.Infrastructure.Migrations
 {
     [DbContext(typeof(TransaccionDbContext))]
-    partial class TransaccionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260618180629_AddOutboxMessage")]
+    partial class AddOutboxMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
