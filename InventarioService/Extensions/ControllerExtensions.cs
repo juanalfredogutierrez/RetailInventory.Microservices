@@ -1,8 +1,4 @@
-﻿using BuildingBlocks.Application;
-using BuildingBlocks.Correlation;
-using Microsoft.AspNetCore.Mvc;
-
-namespace InventarioService.Extensions
+﻿namespace InventarioService.Extensions
 {
     public static class ControllerExtensions
     {

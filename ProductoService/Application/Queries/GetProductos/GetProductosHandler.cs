@@ -1,8 +1,4 @@
-﻿using BuildingBlocks.Application;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using ProductoService.DTO;
-using ProductoService.Infrastructure.Persistence;
+﻿using ProductoService.DTO;
 
 namespace ProductoService.Application.Queries.GetProductos;
 

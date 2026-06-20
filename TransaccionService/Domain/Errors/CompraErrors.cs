@@ -1,6 +1,4 @@
-﻿using BuildingBlocks.Application;
-
-namespace TransaccionService.Domain.Errors;
+﻿namespace TransaccionService.Domain.Errors;
 
 public static class CompraErrors
 {

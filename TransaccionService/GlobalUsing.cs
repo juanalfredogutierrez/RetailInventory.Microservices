@@ -1,0 +1,17 @@
+﻿global using BuildingBlocks;
+global using BuildingBlocks.Application;
+global using BuildingBlocks.Correlation;
+global using BuildingBlocks.Messaging.RabbiMQ;
+global using BuildingBlocks.Middleware;
+global using BuildingBlocks.Middleware.Correlation;
+global using BuildingBlocks.Observability;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using TransaccionService.Application;
+global using TransaccionService.Infrastructure.Messaging;
+global using TransaccionService.Infrastructure.Persistence;
+global using FluentValidation;
+global using MediatR;
+global using TransaccionService;
+global using TransaccionService.Infrastructure;
+global using TransaccionService.Infrastructure.Extensions;

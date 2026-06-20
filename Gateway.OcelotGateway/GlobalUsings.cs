@@ -1,0 +1,9 @@
+﻿global using BuildingBlocks.Observability;
+global using Gateway.OcelotGateway.Extensions;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.IdentityModel.Tokens;
+global using Ocelot.DependencyInjection;
+global using Ocelot.Middleware;
+global using ApiGateway.Extensions;    
+global using System.Text;
+global using Gateway.OcelotGateway.Constants;

@@ -1,6 +1,3 @@
-using BuildingBlocks.Correlation;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using ProductoService.Application.Commands.CreateProducto;
 using ProductoService.Application.Commands.UpdateProduct;
 using ProductoService.Application.Queries.GetProductos;

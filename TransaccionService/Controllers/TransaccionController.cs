@@ -1,5 +1,3 @@
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using TransaccionService.Application.Commands.CreateCompra;
 using TransaccionService.Application.Commands.CreateVenta;
 using TransaccionService.Extensions;

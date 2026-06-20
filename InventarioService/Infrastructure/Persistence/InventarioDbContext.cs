@@ -1,6 +1,5 @@
 ﻿using BuildingBlocks.Domain;
 using InventarioService.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace InventarioService.Infrastructure.Persistence;
 

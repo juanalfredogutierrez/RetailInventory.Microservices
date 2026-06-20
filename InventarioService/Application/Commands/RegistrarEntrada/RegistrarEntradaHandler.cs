@@ -1,7 +1,5 @@
-﻿using MediatR;
-using InventarioService.Infrastructure.Persistence;
-using InventarioService.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using InventarioService.Domain.Entities;
+using MediatR;
 
 namespace InventarioService.Application.Commands.RegistrarEntrada;
 

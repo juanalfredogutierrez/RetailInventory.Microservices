@@ -1,0 +1,15 @@
+﻿global using BuildingBlocks.Application;
+global using BuildingBlocks.Correlation;
+global using BuildingBlocks.Middleware;
+global using BuildingBlocks.Middleware.Correlation;
+global using BuildingBlocks.Observability;
+global using MediatR;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using ProductoService.Application;
+global using ProductoService.Infrastructure.Persistence;
+global using ProductoService.Infrastructure.Seeders;
+global using BuildingBlocks;
+global using ProductoService;
+global using ProductoService.Infrastructure;
+global using ProductoService.Infrastructure.Extensions;

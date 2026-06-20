@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TransaccionService.Domain.Entities;
 
 namespace TransaccionService.Infrastructure.Persistence.Configurations;

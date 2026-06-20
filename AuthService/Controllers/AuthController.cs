@@ -1,7 +1,6 @@
 using AuthService.Application.Commands.Login;
 using AuthService.Extensions;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Controllers;
 

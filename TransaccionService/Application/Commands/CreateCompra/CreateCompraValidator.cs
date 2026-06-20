@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using TransaccionService.Domain.Errors;
+﻿using TransaccionService.Domain.Errors;
 
 namespace TransaccionService.Application.Commands.CreateCompra
 {

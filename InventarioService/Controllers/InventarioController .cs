@@ -1,9 +1,8 @@
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using InventarioService.Application.Commands.RegistrarEntrada;
 using InventarioService.Application.Commands.RegistrarSalida;
 using InventarioService.Application.Queries.GetStock;
 using InventarioService.Extensions;
+using MediatR;
 
 namespace InventarioService.Controllers;
 
