@@ -1,11 +1,7 @@
-﻿using BuildingBlocks.Correlation;
-using BuildingBlocks.Messaging.RabbiMQ;
-using InventarioService.Application.Commands.RegistrarEntrada;
+﻿using InventarioService.Application.Commands.RegistrarEntrada;
 using InventarioService.Application.Commands.RegistrarSalida;
 using InventarioService.Domain.Events;
-using InventarioService.Infrastructure.Persistence;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

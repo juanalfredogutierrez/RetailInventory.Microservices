@@ -1,6 +1,4 @@
-﻿using BuildingBlocks.Messaging.RabbiMQ;
-
-namespace InventarioService.Domain.Events;
+﻿namespace InventarioService.Domain.Events;
 
 public class VentaRegistradaEvent: IntegrationEvent
 {

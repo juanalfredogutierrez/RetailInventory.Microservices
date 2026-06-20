@@ -1,8 +1,4 @@
-﻿using BuildingBlocks.Application;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using ProductoService.Domain.Entities;
-using ProductoService.Infrastructure.Persistence;
+﻿using ProductoService.Domain.Entities;
 
 namespace ProductoService.Application.Commands.CreateProducto;
 

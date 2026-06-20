@@ -1,8 +1,5 @@
-﻿using BuildingBlocks.Application;
-using InventarioService.Domain.Errors;
-using InventarioService.Infrastructure.Persistence;
+﻿using InventarioService.Domain.Errors;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace InventarioService.Application.Commands.RegistrarSalida;
 

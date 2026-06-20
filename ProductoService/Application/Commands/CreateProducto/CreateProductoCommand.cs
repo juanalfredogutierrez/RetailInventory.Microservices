@@ -1,7 +1,4 @@
-﻿using BuildingBlocks.Application;
-using MediatR;
-
-namespace ProductoService.Application.Commands.CreateProducto;
+﻿namespace ProductoService.Application.Commands.CreateProducto;
 
 public record CreateProductoCommand(
     string Codigo,

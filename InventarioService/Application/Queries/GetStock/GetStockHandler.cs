@@ -1,7 +1,4 @@
 ﻿using MediatR;
-using InventarioService.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
-using BuildingBlocks.Application;
 
 namespace InventarioService.Application.Queries.GetStock;
 

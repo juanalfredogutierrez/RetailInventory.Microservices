@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProductoService.Domain.Entities;
-using ProductoService.Infrastructure.Persistence;
+﻿using ProductoService.Domain.Entities;
 
 namespace ProductoService.Infrastructure.Seeders;
 

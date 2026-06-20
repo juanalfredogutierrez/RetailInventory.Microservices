@@ -1,9 +1,6 @@
-﻿using BuildingBlocks.Messaging.RabbiMQ;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+﻿using System.Text.Json;
 using TransaccionService.Domain.Entities;
 using TransaccionService.Domain.Events;
-using TransaccionService.Infrastructure.Persistence;
 
 namespace TransaccionService.Infrastructure.Messaging;
 

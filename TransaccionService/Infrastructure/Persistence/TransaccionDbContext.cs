@@ -1,5 +1,4 @@
 ﻿using BuildingBlocks.Domain;
-using Microsoft.EntityFrameworkCore;
 using TransaccionService.Domain.Entities;
 
 namespace TransaccionService.Infrastructure.Persistence;

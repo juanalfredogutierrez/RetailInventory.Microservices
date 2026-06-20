@@ -1,10 +1,6 @@
-﻿using BuildingBlocks.Application;
-using BuildingBlocks.Correlation;
-using MediatR;
-using System.Text.Json;
+﻿using System.Text.Json;
 using TransaccionService.Domain.Entities;
 using TransaccionService.Domain.Events;
-using TransaccionService.Infrastructure.Persistence;
 
 namespace TransaccionService.Application.Commands.CreateCompra;
 
