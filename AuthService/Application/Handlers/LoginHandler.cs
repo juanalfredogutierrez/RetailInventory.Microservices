@@ -1,11 +1,5 @@
 ﻿using AuthService.Application.Commands.Login;
-using AuthService.Domain.Entities;
-using AuthService.Infrastructure.Persistence;
-using AuthService.Infrastructure.Security;
-using BuildingBlocks.Application;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 public class LoginHandler: IRequestHandler<LoginCommand, Result<string>>
 {

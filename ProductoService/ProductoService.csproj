@@ -1,55 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>disable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Application\Behaviors\**" />
-    <Compile Remove="Application\DTOs\**" />
-    <Compile Remove="Application\Handlers\**" />
-    <Compile Remove="Application\Validators\**" />
-    <Compile Remove="Domain\Enums\**" />
-    <Compile Remove="Domain\Errors\**" />
-    <Compile Remove="Infrastructure\Messaging\**" />
-    <Compile Remove="Infrastructure\Repositories\**" />
-    <Compile Remove="Infrastructure\Security\**" />
-    <Content Remove="Application\Behaviors\**" />
-    <Content Remove="Application\DTOs\**" />
-    <Content Remove="Application\Handlers\**" />
-    <Content Remove="Application\Validators\**" />
-    <Content Remove="Domain\Enums\**" />
-    <Content Remove="Domain\Errors\**" />
-    <Content Remove="Infrastructure\Messaging\**" />
-    <Content Remove="Infrastructure\Repositories\**" />
-    <Content Remove="Infrastructure\Security\**" />
-    <EmbeddedResource Remove="Application\Behaviors\**" />
-    <EmbeddedResource Remove="Application\DTOs\**" />
-    <EmbeddedResource Remove="Application\Handlers\**" />
-    <EmbeddedResource Remove="Application\Validators\**" />
-    <EmbeddedResource Remove="Domain\Enums\**" />
-    <EmbeddedResource Remove="Domain\Errors\**" />
-    <EmbeddedResource Remove="Infrastructure\Messaging\**" />
-    <EmbeddedResource Remove="Infrastructure\Repositories\**" />
-    <EmbeddedResource Remove="Infrastructure\Security\**" />
-    <None Remove="Application\Behaviors\**" />
-    <None Remove="Application\DTOs\**" />
-    <None Remove="Application\Handlers\**" />
-    <None Remove="Application\Validators\**" />
-    <None Remove="Domain\Enums\**" />
-    <None Remove="Domain\Errors\**" />
-    <None Remove="Infrastructure\Messaging\**" />
-    <None Remove="Infrastructure\Repositories\**" />
-    <None Remove="Infrastructure\Security\**" />
-  </ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="MediatR" Version="14.1.0" />
 		<PackageReference Include="FluentValidation" Version="12.1.1" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-		<PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
-		<PackageReference Include="MediatR" Version="14.1.0" />
-		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.27" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.27">
 			<PrivateAssets>all</PrivateAssets>
@@ -57,12 +18,21 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.27" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.27" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BuildingBlocks\BuildingBlocks.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\BuildingBlocks\BuildingBlocks.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="appsettings.Docker.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="appsettings.Development.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
