@@ -6,8 +6,6 @@ using InventarioService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Reflection.Metadata;
-using Xunit;
 
 namespace InventarioService.Tests.Application.Inventario;
 
