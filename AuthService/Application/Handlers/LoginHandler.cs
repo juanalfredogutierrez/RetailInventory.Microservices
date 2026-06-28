@@ -54,8 +54,7 @@ public class LoginHandler: IRequestHandler<LoginCommand, Result<string>>
 
         if (verificationResult == PasswordVerificationResult.Failed)
         {
-            _logger.LogBusiness(
-                $"Login fallido para {request.Username}. Contraseña inválida.");
+            _logger.LogBusiness($"Login fallido para {request.Username}. Contraseña inválida.");
 
             return Result<string>.Failure(
                 Errors.Unauthorized("Credenciales inválidas"));
@@ -64,10 +63,10 @@ public class LoginHandler: IRequestHandler<LoginCommand, Result<string>>
         var token = _jwt.GenerateToken(
             user.Id,
             user.NombreUsuario,
+            user.CorreoElectronico,
             user.Rol.Nombre);
 
-        _logger.LogBusiness(
-            $"Usuario {request.Username} autenticado");
+        _logger.LogBusiness($"Usuario {request.Username} autenticado");
 
         return token;
     }
